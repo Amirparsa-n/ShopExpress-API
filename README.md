@@ -1,0 +1,2 @@
+# ShopExpress-API
+Backend API for an e-commerce platform, built with Express.js and TypeScript. It uses MongoDB for data storage and provides essential features such as user authentication, product management, shopping cart, and order processing.
