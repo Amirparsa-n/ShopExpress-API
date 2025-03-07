@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+require('express-async-errors');
 import { isProduction } from './configs/config';
 import apiRoutes from './routes';
 import usersRouter from './routes/user.routes';
