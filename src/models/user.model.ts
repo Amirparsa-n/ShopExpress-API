@@ -1,5 +1,5 @@
 import mongoose, { Model } from 'mongoose';
-import { IUser } from '../types/user.types';
+import { IUser } from 'src/types/user.types';
 
 const addressSchema = new mongoose.Schema({
     name: { type: String, required: true },

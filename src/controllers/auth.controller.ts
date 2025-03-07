@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import banModel from '../models/ban.model';
-import { generateOtp, getOtpDetails } from '../services/auth.service';
-import { sendSmsOtp } from '../services/SMSOtp.service';
 import { BaseController } from './base.controller';
+import banModel from '@models/ban.model';
+import { generateOtp, getOtpDetails } from '@services/auth.service';
+import { sendSmsOtp } from '@services/SMSOtp.service';
 
 class Auth extends BaseController {
     sendOTP = async (req: Request, res: Response): Promise<any> => {

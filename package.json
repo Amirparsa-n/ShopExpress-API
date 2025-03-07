@@ -6,9 +6,9 @@
     "scripts": {
         "test": "jest",
         "test:e2e": "jest --testPathPattern=src/e2e",
-        "build": "npm run clean && tsc --build",
+        "build": "npm run clean && tsc --build && tsc-alias -p tsconfig.json",
         "start": "node ./dist/index.js",
-        "dev": "nodemon ./src/index.ts",
+        "dev": "nodemon -r tsconfig-paths/register ./src/index.ts",
         "clean": "rimraf ./dist",
         "swagger": "node ./src/configs/swagger.ts"
     },
@@ -32,7 +32,8 @@
         "multer": "^1.4.5-lts.1",
         "passport": "^0.7.0",
         "sharp": "^0.33.5",
-        "swagger-ui-express": "^5.0.1"
+        "swagger-ui-express": "^5.0.1",
+        "tsconfig-paths": "^4.2.0"
     },
     "devDependencies": {
         "@types/bcrypt": "^5.0.2",
@@ -54,6 +55,7 @@
         "ts-jest": "^29.1.2",
         "ts-loader": "^9.5.2",
         "ts-node": "^10.9.2",
+        "tsc-alias": "^1.8.11",
         "typescript": "^5.4.2"
     }
 }

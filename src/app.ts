@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 require('express-async-errors');
 import { isProduction } from './configs/config';
 import apiRoutes from './routes';
-import usersRouter from './routes/user.routes';
 import cors from 'cors';
 import morgan from 'morgan';
 import compression from 'compression';
