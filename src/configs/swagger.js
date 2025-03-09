@@ -1,13 +1,14 @@
-const { port } = require('./config');
 const swaggerAutogen = require('swagger-autogen')();
+require('dotenv').config();
+
 
 const doc = {
     info: {
         version: '0.0.1', // by default: '1.0.0'
-        title: 'Blog API', // by default: 'REST API'
-        description: 'Blog App', // by default: ''
+        title: 'Shop API', // by default: 'REST API'
+        description: 'Scoping App', // by default: ''
     },
-    host: `localhost:${port}`,
+    host: `localhost:${process.env.PORT}`,
     basePath: `/api`,
     schemes: ['http'], // by default: ['http']
     consumes: [], // by default: ['application/json']
@@ -39,7 +40,7 @@ const doc = {
 };
 
 const outputFile = './swagger.json';
-const routes = ['../routes/index'];
+const routes = ['../routes/index.ts'];
 
 /* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
 root file where the route starts, such as index.js, app.js, routes.js, etc ... */

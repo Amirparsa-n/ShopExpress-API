@@ -2,10 +2,10 @@
   "swagger": "2.0",
   "info": {
     "version": "0.0.1",
-    "title": "Blog API",
-    "description": "Blog App"
+    "title": "Shop API",
+    "description": "Scoping App"
   },
-  "host": "localhost:4000",
+  "host": "localhost:5000",
   "basePath": "/api",
   "tags": [
     {
@@ -29,6 +29,39 @@
     }
   },
   "paths": {
+    "/auth/sendOTP": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/verifyOTP": {
+      "post": {
+        "description": "",
+        "responses": {
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/auth/getMe": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/users/": {
       "get": {
         "description": "",

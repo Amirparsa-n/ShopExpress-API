@@ -13,6 +13,7 @@ import { jwtSecretKey } from '@configs/config';
 class Auth extends BaseController {
     sendOTP = async (req: Request<any, any, { phone: string }>, res: Response): Promise<any> => {
         const { phone } = req.body;
+        // #swagger.tags = ['Auth']
 
         if (!phone) {
             return this.errorResponse(res, 'Phone number is required', 400);
@@ -40,6 +41,7 @@ class Auth extends BaseController {
 
     verifyOTP = async (req: Request<any, any, { phone: string; otp: string }>, res: Response): Promise<any> => {
         const { phone, otp } = req.body;
+        // #swagger.tags = ['Auth']
 
         const savesOtp = await redis.get(getOtpRedisPattern(phone));
 
@@ -55,18 +57,31 @@ class Auth extends BaseController {
 
         const user = await userModel.findOne({ phone });
 
-        if (!user) {
-            return this.errorResponse(res, 'User not found', 404);
+        if (user) {
+            redis.del(getOtpRedisPattern(phone));
+
+            const token = jwt.sign({ userId: user.id }, jwtSecretKey as string, { expiresIn: '30d' });
+
+            return this.successResponse(res, { user, token }, 'OTP verified successfully');
         }
 
-        redis.del(getOtpRedisPattern(phone));
+        // * Register
 
-        const token = jwt.sign({ userId: user.id }, jwtSecretKey as string, { expiresIn: '30d' });
+        const isFirstUser = (await userModel.countDocuments()) === 0;
 
-        return this.successResponse(res, { user, token }, 'OTP verified successfully');
+        const newUser = await userModel.create({
+            phone,
+            role: isFirstUser ? 'admin' : 'user',
+        });
+
+        const token = jwt.sign({ userId: newUser.id }, jwtSecretKey as string, { expiresIn: '30d' });
+
+        return this.successResponse(res, { user: newUser, token }, 'User register successfully');
     };
 
-    getMe = async (req: Request, res: Response): Promise<any> => {};
+    getMe = async (req: Request, res: Response): Promise<any> => {
+        // #swagger.tags = ['Auth']
+    };
 }
 
 export default new Auth();

@@ -10,7 +10,7 @@
         "start": "node ./dist/index.js",
         "dev": "nodemon -r tsconfig-paths/register ./src/index.ts",
         "clean": "rimraf ./dist",
-        "swagger": "node ./src/configs/swagger.ts"
+        "swagger": "node ./src/configs/swagger.js"
     },
     "keywords": [],
     "author": "",
