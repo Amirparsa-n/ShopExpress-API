@@ -3,7 +3,7 @@ import { AsyncCheckFunction, SyncCheckFunction } from 'fastest-validator';
 
 export const validationMiddleware = (validation: SyncCheckFunction | AsyncCheckFunction) => {
     return (req: Request, res: Response, next: NextFunction): any => {
-        const validationResponse = validation({
+        const validationResponse: any = validation({
             ...req.body,
             cover: req.file,
         });
@@ -12,6 +12,15 @@ export const validationMiddleware = (validation: SyncCheckFunction | AsyncCheckF
             return next();
         }
 
-        return res.status(422).json(validationResponse);
+        // Transform errors to Ant Design format
+        const antdErrors = validationResponse.reduce((acc: any, error: any) => {
+            acc[error.field] = [error.message];
+            return acc;
+        }, {});
+
+        return res.status(422).json({
+            errors: antdErrors,
+            status: 'error',
+        });
     };
 };
