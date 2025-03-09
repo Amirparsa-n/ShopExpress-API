@@ -10,3 +10,11 @@ export async function connectToMongoDB() {
         process.exit(1);
     }
 }
+
+export async function disconnectMongoDB() {
+    try {
+        await mongoose.disconnect();
+    } catch (error) {
+        console.error('Error disconnecting from MongoDB:', error);
+    }
+}

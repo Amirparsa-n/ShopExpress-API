@@ -1,4 +1,4 @@
-import { connectToMongoDB } from './configs/mongoDB';
+import { connectToMongoDB, disconnectMongoDB } from './configs/mongoDB';
 import { createApp } from './app';
 import dotenv from 'dotenv';
 import { isProduction } from './configs/config';
@@ -29,7 +29,11 @@ export async function bootstrap() {
 export async function closeServer() {
     if (server) {
         await server.close();
+        await disconnectMongoDB();
     }
 }
 
-bootstrap();
+// Only run server if this file is run directly
+if (require.main === module) {
+    bootstrap();
+}
