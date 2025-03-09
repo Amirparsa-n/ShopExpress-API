@@ -20,6 +20,18 @@ export async function bootstrap() {
                 ###############################################################
               `);
         });
+
+        // Handle process termination
+        process.on('SIGINT', async () => {
+            await closeServer();
+            process.exit(0);
+        });
+
+        process.on('SIGTERM', async () => {
+            await closeServer();
+            process.exit(0);
+        });
+
         return server;
     } catch (err) {
         console.error(err);

@@ -7,6 +7,6 @@ const authRouter = Router();
 
 authRouter.post('/sendOTP', authController.sendOTP);
 authRouter.post('/verifyOTP', validationMiddleware(sendOtpValidate), authController.verifyOTP);
-authRouter.post('/getMe', authController.getMe);
+authRouter.get('/getMe', authController.getMe);
 
 export default authRouter;

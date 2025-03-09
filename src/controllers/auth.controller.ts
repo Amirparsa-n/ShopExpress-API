@@ -81,6 +81,8 @@ class Auth extends BaseController {
 
     getMe = async (req: Request, res: Response): Promise<any> => {
         // #swagger.tags = ['Auth']
+
+
     };
 }
 

@@ -37,12 +37,12 @@ const userSchema = new mongoose.Schema<IUser, Model<IUser>>(
             unique: true,
             lowercase: true,
         },
-        password: {
-            type: String,
-            required: true,
-            minlength: 6,
-            maxlength: 100,
-        },
+        // password: {
+        //     type: String,
+        //     required: false,
+        //     minlength: 6,
+        //     maxlength: 100,
+        // },
         role: {
             type: String,
             enum: ['user', 'admin', 'seller'],
