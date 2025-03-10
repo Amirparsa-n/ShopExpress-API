@@ -10,6 +10,7 @@ export const sendOtpValidator = object({
 const verifyOtpSchema: ValidationSchema = {
     phone: { type: 'string', empty: false, pattern: '((0?9)|(\\+?989))\\d{9}' },
     otp: { type: 'string', empty: false, pattern: '^[0-9]+$' },
+    isSeller: { type: 'boolean', empty: false }
 };
 
 export const sendOtpValidate = v.compile(verifyOtpSchema);

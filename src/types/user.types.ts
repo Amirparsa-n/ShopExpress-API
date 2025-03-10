@@ -6,6 +6,8 @@ export interface IUser {
     password: string;
     role: Role;
     addresses: AddressType[];
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export type Role = 'user' | 'admin' | 'seller';
