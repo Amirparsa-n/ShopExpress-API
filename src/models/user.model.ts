@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema<IUser, Model<IUser>>(
             type: String,
             required: false,
             minlength: 3,
-            maxlength: 100,
+            maxLength: 100,
         },
         lastName: {
             type: String,
@@ -35,13 +35,14 @@ const userSchema = new mongoose.Schema<IUser, Model<IUser>>(
             type: String,
             required: false,
             unique: true,
+            sparse: true,
             lowercase: true,
         },
         // password: {
         //     type: String,
         //     required: false,
         //     minlength: 6,
-        //     maxlength: 100,
+        //     maxLength: 100,
         // },
         role: {
             type: String,
