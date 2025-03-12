@@ -4,18 +4,26 @@ const v = new Validator();
 
 // * Address Validation
 
-const addressesSchema: ValidationSchema = {
-    name: { type: 'string', max: 255, empty: false },
-    postalCode: { type: 'string', empty: false },
-    location: {
-        type: 'object',
-        properties: {
-            lat: { type: 'number', empty: false },
-            lng: { type: 'number', empty: false },
+const addressesSchema = (mode: 'put' | 'post'): ValidationSchema => {
+    const empty = mode === 'put';
+
+    return {
+        name: { type: 'string', max: 255, empty, optional: empty },
+        postalCode: { type: 'string', empty, optional: empty },
+        location: {
+            type: 'object',
+            empty,
+            optional: empty,
+            properties: {
+                lat: { type: 'number' },
+                lng: { type: 'number' },
+            },
         },
-    },
-    address: { type: 'string', empty: false },
-    cityId: { type: 'string', empty: false },
+        address: { type: 'string', empty, optional: empty },
+        cityId: { type: 'string', empty, optional: empty },
+    };
 };
 
-export const addressValidate = v.compile(addressesSchema);
+export const addressValidate = v.compile(addressesSchema('post'));
+
+export const updateAddressValidate = v.compile(addressesSchema('put'));

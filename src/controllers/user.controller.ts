@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { BaseController } from './base.controller';
 import userModel from '@models/user.model';
 import banModel from '@models/ban.model';
-import cities from '@utils/cities/cities.json';
+import { validateCityId } from '@services/user.service';
 
 class User extends BaseController {
     banUser = async (req: Request, res: Response): Promise<any> => {
@@ -25,11 +25,9 @@ class User extends BaseController {
 
     addAddress = async (req: Request, res: Response): Promise<any> => {
         const user = req.user;
-        const { name, postalCode, location, address, cityId } = req.body;
+        const { cityId } = req.body;
 
-        const currentCity = cities.find((city) => +city.id === +cityId);
-
-        if (!currentCity) {
+        if (!validateCityId(cityId)) {
             return this.errorResponse(res, 'Invalid city', 400);
         }
 
@@ -56,6 +54,35 @@ class User extends BaseController {
         await userModel.updateOne({ _id: req.user?._id }, { $pull: { addresses: { _id: addressId } } });
 
         return this.successResponse(res, null, 'Address deleted successfully');
+    };
+
+    updateAddress = async (req: Request, res: Response): Promise<any> => {
+        const { addressId } = req.params;
+        const { name, postalCode, location, address, cityId } = req.body;
+
+        const user = await userModel.findOne({ _id: req.user?._id });
+
+        if (!user) return this.errorResponse(res, 'User not found', 404);
+
+        const currentAddress = user.addresses.find((address: any) => address._id.toString() === addressId);
+
+        if (!currentAddress) {
+            return this.errorResponse(res, 'Address not found', 404);
+        }
+
+        currentAddress.name = name || currentAddress.name;
+        currentAddress.postalCode = postalCode || currentAddress.postalCode;
+        currentAddress.location = location || currentAddress.location;
+        currentAddress.address = address || currentAddress.address;
+        currentAddress.cityId = cityId || currentAddress.cityId;
+
+        if (!validateCityId(currentAddress.cityId)) {
+            return this.errorResponse(res, 'Invalid city', 400);
+        }
+
+        await user.save();
+
+        return this.successResponse(res, { address: currentAddress }, 'Address updated successfully');
     };
 }
 
