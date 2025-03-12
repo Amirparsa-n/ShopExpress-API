@@ -41,6 +41,22 @@ class User extends BaseController {
 
         return this.successResponse(res, { address: newAddress }, 'New Address added successfully');
     };
+
+    deleteAddress = async (req: Request, res: Response): Promise<any> => {
+        const { addressId } = req.params;
+
+        const user: any = await userModel.findOne({ _id: req.user?._id });
+
+        const currentAddress = user?.addresses.id(addressId);
+
+        if (!currentAddress) {
+            return this.errorResponse(res, 'Address not found', 404);
+        }
+
+        await userModel.updateOne({ _id: req.user?._id }, { $pull: { addresses: { _id: addressId } } });
+
+        return this.successResponse(res, null, 'Address deleted successfully');
+    };
 }
 
 export default new User();

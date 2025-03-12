@@ -9,6 +9,8 @@ import { V } from '@middlewares/validation.middleware';
 const userRoute = Router();
 
 userRoute.get('/ban/:userId', authGuard, roleGuard('admin'), userController.banUser);
+
 userRoute.get('/me/addresses', authGuard, V(addressValidate), userController.addAddress);
+userRoute.delete('/me/addresses/:addressId', authGuard, userController.deleteAddress);
 
 export default userRoute;
