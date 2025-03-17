@@ -84,6 +84,25 @@ class User extends BaseController {
 
         return this.successResponse(res, { address: currentAddress }, 'Address updated successfully');
     };
+
+    getAll = async (
+        req: Request<any, any, any, { page: string; limit: string; search: string }>,
+        res: Response
+    ): Promise<any> => {
+        const { page, limit, search } = req.query;
+
+        const searchQuery = search
+            ? { $or: [{ name: { $regex: search, $options: 'i' } }, { phone: { $regex: search, $options: 'i' } }] }
+            : {};
+
+        if (limit) {
+            const data = await this.handlePagination('users', +page, +limit, userModel, searchQuery);
+            return this.successResponse(res, data);
+        } else {
+            const users = await userModel.find(searchQuery);
+            return this.successResponse(res, users);
+        }
+    };
 }
 
 export default new User();

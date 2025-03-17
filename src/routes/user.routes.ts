@@ -14,4 +14,7 @@ userRoute.post('/me/addresses', authGuard, V(addressValidate), userController.ad
 userRoute.put('/me/addresses/:addressId', authGuard, V(updateAddressValidate), userController.updateAddress);
 userRoute.delete('/me/addresses/:addressId', authGuard, userController.deleteAddress);
 
+// Admin
+userRoute.get('/getAll?', authGuard, roleGuard('admin'), userController.getAll);
+
 export default userRoute;
