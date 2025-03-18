@@ -6,8 +6,12 @@ import { V } from '@middlewares/validation.middleware';
 import { createSellerValidate } from '@validators/seller.validation';
 
 // /seller
-const sellerRoute = Router();
+const sellerRouter = Router();
 
-sellerRoute.post('/', authGuard, roleGuard('seller'), V(createSellerValidate), sellerController.create);
+sellerRouter
+    .use('/', authGuard, roleGuard('seller'))
+    .post('/', V(createSellerValidate), sellerController.create)
+    .patch('/', V(createSellerValidate), sellerController.update)
+    .delete('/:id', sellerController.deleteSeller);
 
-export default sellerRoute;
+export default sellerRouter;
