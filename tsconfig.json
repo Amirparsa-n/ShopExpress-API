@@ -36,6 +36,7 @@
             "@middlewares/*": ["src/middlewares/*"],
             "@database/*": ["src/database/*"],
             "@routes/*": ["src/routes/*"],
+            "@data/*": ["src/data/*"],
             "@configs/*": ["src/configs/*"],
             "@utils/*": ["src/utils/*"],
             "@auth/*": ["src/auth/*"],

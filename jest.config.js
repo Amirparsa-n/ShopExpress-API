@@ -8,6 +8,7 @@ module.exports = {
         '^@services/(.*)$': '<rootDir>/src/services/$1',
         '^@models/(.*)$': '<rootDir>/src/models/$1',
         '^@routes/(.*)$': '<rootDir>/src/routes/$1',
+        '^@data/(.*)$': '<rootDir>/src/data/$1',
         '^@middlewares/(.*)$': '<rootDir>/src/middlewares/$1',
         '^@configs/(.*)$': '<rootDir>/src/configs/$1',
         '^@utils/(.*)$': '<rootDir>/src/utils/$1',
