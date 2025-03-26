@@ -12,6 +12,7 @@ sellerRouter
     .use('/', authGuard, roleGuard('seller'))
     .post('/', V(createSellerValidate), sellerController.create)
     .patch('/', V(createSellerValidate), sellerController.update)
-    .delete('/:id', sellerController.deleteSeller);
+    .delete('/', sellerController.deleteSeller)
+    .get('/', sellerController.getSeller);
 
 export default sellerRouter;

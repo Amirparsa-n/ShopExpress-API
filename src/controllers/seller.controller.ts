@@ -47,9 +47,35 @@ class Seller extends BaseController {
         return this.successResponse(res, seller, 'Seller updated successfully', 200);
     };
 
-    deleteSeller = async (req: Request, res: Response): Promise<any> => {};
+    deleteSeller = async (req: Request, res: Response): Promise<any> => {
+        const user = req.user;
+        if (!user) return;
 
-    getSeller = async (req: Request, res: Response): Promise<any> => {};
+        const existingSeller = await sellerModel.findOne({ user: user._id });
+
+        if (!existingSeller) {
+            return this.errorResponse(res, 'Seller not found !!', 400);
+        }
+
+        await sellerModel.findByIdAndDelete(existingSeller._id);
+
+        // TODO: Delete all products of this seller
+        // TODO: Delete Products from user scoping cart
+
+        return this.successResponse(res, null, 'Seller deleted successfully', 200);
+    };
+
+    getSeller = async (req: Request, res: Response): Promise<any> => {
+        const user = req.user;
+        if (!user) return;
+
+        const seller = await sellerModel.findOne({ user: user._id });
+        if (!seller) {
+            return this.errorResponse(res, 'Seller not found !!', 400);
+        }
+
+        return this.successResponse(res, seller, 'Seller fetched successfully', 200);
+    };
 }
 
 export default new Seller();
