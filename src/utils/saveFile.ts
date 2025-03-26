@@ -45,7 +45,7 @@ export async function saveFile(
         } else {
             // Save the file as-is if not an image or no compression options provided
             finalPath = path.join(uploadDir, `${Date.now()}-${file.originalname}`);
-            fs.writeFileSync(finalPath, file.buffer);
+            fs.writeFileSync(finalPath, file.buffer as any);
         }
 
         const relativePath = path.relative(process.cwd(), finalPath);
