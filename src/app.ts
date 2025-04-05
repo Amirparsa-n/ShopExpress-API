@@ -11,6 +11,7 @@ import swaggerUi from 'swagger-ui-express';
 import { config } from './configs/config';
 import errorHandler from './middlewares/error-handler';
 import { headersMiddleware } from './middlewares/headers.middleware';
+import { zodErrorHandler } from './middlewares/zodErrorHandler';
 import apiRoutes from './routes';
 
 import 'express-async-errors';
@@ -60,6 +61,7 @@ export function createApp() {
         return res.status(404).json({ message: 'Not Found' });
     });
 
+    app.use(zodErrorHandler);
     app.use(errorHandler);
 
     return app;

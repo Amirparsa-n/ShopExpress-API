@@ -1,31 +1,29 @@
-import type { ValidationSchema } from 'fastest-validator';
+import { z } from 'zod';
 
-import Validator from 'fastest-validator';
+export const createAddressesSchema = z.object({
+    name: z.string().max(255),
+    postalCode: z.string(),
+    location: z
+        .object({
+            lat: z.number(),
+            lng: z.number(),
+        })
+        .optional()
+        .nullable(),
+    address: z.string(),
+    cityId: z.string(),
+});
 
-const v = new Validator();
-
-// * Address Validation
-
-const addressesSchema = (mode: 'post' | 'put'): ValidationSchema => {
-    const empty = mode === 'put';
-
-    return {
-        name: { type: 'string', max: 255, empty, optional: empty },
-        postalCode: { type: 'string', empty, optional: empty },
-        location: {
-            type: 'object',
-            empty,
-            optional: empty,
-            properties: {
-                lat: { type: 'number' },
-                lng: { type: 'number' },
-            },
-        },
-        address: { type: 'string', empty, optional: empty },
-        cityId: { type: 'string', empty, optional: empty },
-    };
-};
-
-export const addressValidate = v.compile(addressesSchema('post'));
-
-export const updateAddressValidate = v.compile(addressesSchema('put'));
+export const updateAddressSchema = z.object({
+    name: z.string().max(255).optional().nullable(),
+    postalCode: z.string().optional().nullable(),
+    location: z
+        .object({
+            lat: z.number(),
+            lng: z.number(),
+        })
+        .optional()
+        .nullable(),
+    address: z.string().optional().nullable(),
+    cityId: z.string().optional().nullable(),
+});

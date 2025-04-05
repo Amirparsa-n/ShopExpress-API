@@ -1,27 +1,33 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { AsyncCheckFunction, SyncCheckFunction } from 'fastest-validator';
+import type { AnyZodObject } from 'zod';
 
-// validationMiddleware
-export const V = (validation: AsyncCheckFunction | SyncCheckFunction) => {
-    return (req: Request, res: Response, next: NextFunction): any => {
-        const validationResponse: any = validation({
-            ...req.body,
-            cover: req.file,
-        });
+import { ZodError } from 'zod';
 
-        if (validationResponse === true) {
-            return next();
+interface ValidationSchema {
+    body?: AnyZodObject;
+    query?: AnyZodObject;
+    params?: AnyZodObject;
+}
+
+export const V = (schema: ValidationSchema) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if (schema.body) {
+                req.body = await schema.body.parseAsync(req.body);
+            }
+            if (schema.query) {
+                req.query = await schema.query.parseAsync(req.query);
+            }
+            if (schema.params) {
+                req.params = await schema.params.parseAsync(req.params);
+            }
+            next();
+        } catch (error) {
+            if (error instanceof ZodError) {
+                next(error);
+            } else {
+                next(error);
+            }
         }
-
-        // Transform errors to Ant Design format
-        const antdErrors = validationResponse.reduce((acc: any, error: any) => {
-            acc[error.field] = [error.message];
-            return acc;
-        }, {});
-
-        return res.status(422).json({
-            errors: antdErrors,
-            status: 'error',
-        });
     };
 };

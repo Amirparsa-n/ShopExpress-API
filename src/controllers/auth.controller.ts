@@ -6,7 +6,6 @@ import banModel from '@models/ban.model';
 import userModel from '@models/user.model';
 import { generateOtp, getOtpDetails, getOtpRedisPattern } from '@services/auth.service';
 import { sendSmsOtp } from '@services/SMSOtp.service';
-import { sendOtpValidator } from '@validators/auth.validation';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -35,8 +34,6 @@ class AuthController extends BaseController {
         if (isBanned) {
             return this.errorResponse(res, 'You are banned from using this service', 403);
         }
-
-        await sendOtpValidator.validate(req.body, { abortEarly: false });
 
         const { expired, remainingTime } = await getOtpDetails(phone);
 
