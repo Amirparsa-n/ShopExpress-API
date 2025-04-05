@@ -1,9 +1,9 @@
-import { Router } from 'express';
 import userController from '@controllers/user.controller';
-import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { authGuard } from '@middlewares/authGuard.middleware';
-import { addressValidate, updateAddressValidate } from '@validators/user.validation';
+import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
+import { addressValidate, updateAddressValidate } from '@validators/user.validation';
+import { Router } from 'express';
 
 // /api/users
 const userRoute = Router();

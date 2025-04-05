@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
-import { mongoURI } from './config';
+
+import { config } from './config';
 
 export async function connectToMongoDB() {
+    const mongoURI = config.get('mongoURI');
+
     try {
-        await mongoose.connect(mongoURI as string);
+        await mongoose.connect(mongoURI);
         console.log(`Mongoose Connected: ${mongoose.connection.host}`);
-    } catch (err) {
-        console.log(`Error in mongoose connection: ${err}`);
+    } catch (error) {
+        console.log(`Error in mongoose connection: ${error}`);
         process.exit(1);
     }
 }

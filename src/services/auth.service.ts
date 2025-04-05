@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt';
 import redis from '@configs/redis';
+import bcrypt from 'bcrypt';
 
 export function getOtpRedisPattern(phone: string): string {
     return `otp:${phone}`;

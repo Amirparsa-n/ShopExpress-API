@@ -1,7 +1,9 @@
-import mongoose, { Model } from 'mongoose';
-import { ISeller } from 'src/types/seller.types';
+import type { Model } from 'mongoose';
+import type { Seller } from 'src/types/seller.types';
 
-const sellerSchema = new mongoose.Schema<ISeller, Model<ISeller>>(
+import mongoose from 'mongoose';
+
+const sellerSchema = new mongoose.Schema<Seller, Model<Seller>>(
     {
         name: {
             type: String,

@@ -1,16 +1,27 @@
-import { Request, Response } from 'express';
-import { BaseController } from './base.controller';
+import type { Request, Response } from 'express';
+
+import { config } from '@configs/config';
+import redis from '@configs/redis';
 import banModel from '@models/ban.model';
+import userModel from '@models/user.model';
 import { generateOtp, getOtpDetails, getOtpRedisPattern } from '@services/auth.service';
 import { sendSmsOtp } from '@services/SMSOtp.service';
 import { sendOtpValidator } from '@validators/auth.validation';
-import redis from '@configs/redis';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import userModel from '@models/user.model';
-import { jwtSecretKey } from '@configs/config';
 
-class Auth extends BaseController {
+import { BaseController } from './base.controller';
+
+const jwtSecretKey = config.get('jwtSecretKey');
+
+class AuthController extends BaseController {
+    getMe = (req: Request, res: Response) => {
+        // #swagger.tags = ['Auth']
+        const user = req.user;
+
+        return this.successResponse(res, user);
+    };
+
     sendOTP = async (req: Request<any, any, { phone: string }>, res: Response): Promise<any> => {
         const { phone } = req.body;
         // #swagger.tags = ['Auth']
@@ -58,9 +69,9 @@ class Auth extends BaseController {
         const user = await userModel.findOne({ phone });
 
         if (user) {
-            redis.del(getOtpRedisPattern(phone));
+            await redis.del(getOtpRedisPattern(phone));
 
-            const token = jwt.sign({ userId: user.id }, jwtSecretKey as string, { expiresIn: '30d' });
+            const token = jwt.sign({ userId: user.id }, jwtSecretKey, { expiresIn: '30d' });
 
             return this.successResponse(res, { user, token }, 'OTP verified successfully');
         }
@@ -74,17 +85,10 @@ class Auth extends BaseController {
             role: isFirstUser ? 'admin' : 'user',
         });
 
-        const token = jwt.sign({ userId: newUser.id }, jwtSecretKey as string, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: newUser.id }, jwtSecretKey, { expiresIn: '30d' });
 
         return this.successResponse(res, { user: newUser, token }, 'User register successfully');
     };
-
-    getMe = async (req: Request, res: Response): Promise<any> => {
-        // #swagger.tags = ['Auth']
-        const user = req.user;
-
-        return this.successResponse(res, user);
-    };
 }
 
-export default new Auth();
+export default new AuthController();

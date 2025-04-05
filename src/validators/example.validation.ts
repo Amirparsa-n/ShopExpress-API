@@ -1,4 +1,6 @@
-import Validator, { ValidationSchema } from 'fastest-validator';
+import type { ValidationSchema } from 'fastest-validator';
+
+import Validator from 'fastest-validator';
 
 const v = new Validator();
 

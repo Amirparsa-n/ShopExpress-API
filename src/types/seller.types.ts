@@ -1,4 +1,4 @@
-export interface ISeller {
+export interface Seller {
     name: string;
     contactDetails: { phone: string };
     cityId: number;

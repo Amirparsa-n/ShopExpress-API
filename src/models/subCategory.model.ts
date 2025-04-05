@@ -1,7 +1,9 @@
-import mongoose, { Model } from 'mongoose';
-import { ISubcategory } from 'src/types/category.types';
+import type { Model } from 'mongoose';
+import type { Subcategory } from 'src/types/category.types';
 
-const subcategorySchema = new mongoose.Schema<ISubcategory, Model<ISubcategory>>(
+import mongoose from 'mongoose';
+
+const subcategorySchema = new mongoose.Schema<Subcategory, Model<Subcategory>>(
     {
         title: {
             type: String,

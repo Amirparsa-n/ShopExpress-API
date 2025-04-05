@@ -1,31 +1,31 @@
-export interface ICategory {
+export interface Category {
     _id: number;
     title: string;
     slug: string;
     description: string;
     icon: { filename: string; path: string };
-    parent: ICategory;
+    parent: Category;
     filters: CategoryFilter[];
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-export type CategoryFilter = {
+export interface CategoryFilter {
     name: string;
     slug: string;
     description?: string;
-    type: 'radio' | 'checkbox';
+    type: 'checkbox' | 'radio';
     options: string[];
     min?: number;
     max?: number;
-};
+}
 
-export interface ISubcategory {
+export interface Subcategory {
     _id: number;
     title: string;
     slug: string;
     description: string;
-    parent: ICategory;
+    parent: Category;
     filters: CategoryFilter[];
     createdAt?: Date;
     updatedAt?: Date;

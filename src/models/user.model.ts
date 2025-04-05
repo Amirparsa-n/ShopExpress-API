@@ -1,5 +1,7 @@
-import mongoose, { Model } from 'mongoose';
-import { IUser } from 'src/types/user.types';
+import type { Model } from 'mongoose';
+import type { User } from 'src/types/user.types';
+
+import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -12,7 +14,7 @@ const addressSchema = new mongoose.Schema({
     cityId: { type: String, required: true },
 });
 
-const userSchema = new mongoose.Schema<IUser, Model<IUser>>(
+const userSchema = new mongoose.Schema<User, Model<User>>(
     {
         phone: {
             type: String,

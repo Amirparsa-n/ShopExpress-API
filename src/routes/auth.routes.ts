@@ -1,8 +1,8 @@
-import { Router } from 'express';
 import authController from '@controllers/auth.controller';
+import { authGuard } from '@middlewares/authGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
 import { sendOtpValidate } from '@validators/auth.validation';
-import { authGuard } from '@middlewares/authGuard.middleware';
+import { Router } from 'express';
 
 const authRouter = Router();
 

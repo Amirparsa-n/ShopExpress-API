@@ -1,6 +1,7 @@
+/* eslint-disable n/no-unpublished-require */
+/* eslint-disable n/no-process-env */
 const swaggerAutogen = require('swagger-autogen')();
 require('dotenv').config();
-
 
 const doc = {
     info: {

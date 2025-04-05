@@ -1,4 +1,4 @@
-export interface IUser {
+export interface User {
     _id: string;
     phone: string;
     firstName?: string;
@@ -11,9 +11,9 @@ export interface IUser {
     updatedAt?: Date;
 }
 
-export type Role = 'user' | 'admin' | 'seller';
+export type Role = 'admin' | 'seller' | 'user';
 
-export type AddressType = {
+export interface AddressType {
     name: string;
     postalCode: string;
     location: {
@@ -22,4 +22,4 @@ export type AddressType = {
     };
     address: string;
     cityId: string;
-};
+}

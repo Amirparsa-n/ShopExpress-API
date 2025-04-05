@@ -1,9 +1,8 @@
-import { jwtSecretKey } from '@configs/config';
+import type { NextFunction, Request, Response } from 'express';
+
 import banModel from '@models/ban.model';
 import userModel from '@models/user.model';
 import { verifyToken } from '@utils/verifyToken';
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 
 export const authGuard = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;

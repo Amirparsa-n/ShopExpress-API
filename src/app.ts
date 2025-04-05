@@ -1,23 +1,28 @@
-import express, { Request, Response } from 'express';
-require('express-async-errors');
-import { isProduction } from './configs/config';
-import apiRoutes from './routes';
-import cors from 'cors';
-import morgan from 'morgan';
-import compression from 'compression';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { headersMiddleware } from './middlewares/headers.middleware';
-import errorHandler from './middlewares/error-handler';
+import type { Request, Response } from 'express';
 
+import compression from 'compression';
+import cors from 'cors';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
+
+import { config } from './configs/config';
+import errorHandler from './middlewares/error-handler';
+import { headersMiddleware } from './middlewares/headers.middleware';
+import apiRoutes from './routes';
+
+import 'express-async-errors';
+
+const isProduction = config.get('isProduction');
 
 let swaggerDocument: any;
 if (!isProduction) {
     try {
-        swaggerDocument = require('./configs/swagger.json');
+        swaggerDocument = import('./configs/swagger.json');
     } catch (error) {
-        console.error('Swagger document not found, skipping Swagger setup.');
+        console.error('Swagger document not found, skipping Swagger setup.', error);
         swaggerDocument = null;
     }
 }
@@ -37,7 +42,7 @@ export function createApp() {
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000,
         max: 300,
-        message: async (req: Request, res: Response) => {
+        message: (req: Request, res: Response) => {
             return res.status(429).json({ message: 'Too many requests, please try again later.' });
         },
     });

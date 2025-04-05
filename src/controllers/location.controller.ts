@@ -1,11 +1,25 @@
-import { Request, Response } from 'express';
-import { BaseController } from './base.controller';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import type { Request, Response } from 'express';
 
-class Location extends BaseController {
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+
+import { BaseController } from './base.controller';
+
+class LocationController extends BaseController {
     private citiesCache: any = null;
     private provincesCache: any = null;
+
+    getAllCities = async (req: Request, res: Response): Promise<any> => {
+        try {
+            await this.loadData();
+            return this.successResponse(res, {
+                cities: this.citiesCache,
+                provinces: this.provincesCache,
+            });
+        } catch {
+            return this.errorResponse(res, 'Error loading location data');
+        }
+    };
 
     private async loadData() {
         if (!this.citiesCache || !this.provincesCache) {
@@ -21,18 +35,6 @@ class Location extends BaseController {
             this.provincesCache = JSON.parse(provincesData);
         }
     }
-
-    getAllCities = async (req: Request, res: Response): Promise<any> => {
-        try {
-            await this.loadData();
-            return this.successResponse(res, {
-                cities: this.citiesCache,
-                provinces: this.provincesCache,
-            });
-        } catch (error) {
-            return this.errorResponse(res, 'Error loading location data');
-        }
-    };
 }
 
-export default new Location();
+export default new LocationController();

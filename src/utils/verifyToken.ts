@@ -1,11 +1,11 @@
-import { jwtSecretKey } from '@configs/config';
+import { config } from '@configs/config';
 import { verify } from 'jsonwebtoken';
 
 export const verifyToken = (token: string) => {
     try {
-        const result: any = verify(token, jwtSecretKey as string);
+        const result: any = verify(token, config.get('jwtSecretKey'));
         return { userId: result.userId };
-    } catch (e) {
+    } catch {
         return false;
     }
 };

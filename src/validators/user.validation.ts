@@ -1,10 +1,12 @@
-import Validator, { ValidationSchema } from 'fastest-validator';
+import type { ValidationSchema } from 'fastest-validator';
+
+import Validator from 'fastest-validator';
 
 const v = new Validator();
 
 // * Address Validation
 
-const addressesSchema = (mode: 'put' | 'post'): ValidationSchema => {
+const addressesSchema = (mode: 'post' | 'put'): ValidationSchema => {
     const empty = mode === 'put';
 
     return {

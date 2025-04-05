@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
-import { BaseController } from './base.controller';
+import type { Request, Response } from 'express';
+
 import categoryModel from '@models/category.model';
 import { saveFile } from '@utils/saveFile';
-import path from 'path';
+import path from 'node:path';
 
-class Category extends BaseController {
+import { BaseController } from './base.controller';
+
+class CategoryController extends BaseController {
     createCategory = async (req: Request, res: Response): Promise<any> => {
-        let { title, slug, parent, description, filters } = req.body;
-
-        // filters = JSON.parse(filters);
+        const { title, parent, description, filters } = req.body;
+        let { slug } = req.body;
 
         let icon = null;
         if (req.file) {
@@ -33,4 +34,4 @@ class Category extends BaseController {
     };
 }
 
-export default new Category();
+export default new CategoryController();

@@ -1,7 +1,9 @@
-import mongoose, { Model } from 'mongoose';
-import { ICategory } from 'src/types/category.types';
+import type { Model } from 'mongoose';
+import type { Category } from 'src/types/category.types';
 
-const categorySchema = new mongoose.Schema<ICategory, Model<ICategory>>(
+import mongoose from 'mongoose';
+
+const categorySchema = new mongoose.Schema<Category, Model<Category>>(
     {
         title: {
             type: String,

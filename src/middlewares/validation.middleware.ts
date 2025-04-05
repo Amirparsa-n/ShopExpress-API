@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { AsyncCheckFunction, SyncCheckFunction } from 'fastest-validator';
+import type { NextFunction, Request, Response } from 'express';
+import type { AsyncCheckFunction, SyncCheckFunction } from 'fastest-validator';
 
 // validationMiddleware
-export const V = (validation: SyncCheckFunction | AsyncCheckFunction) => {
+export const V = (validation: AsyncCheckFunction | SyncCheckFunction) => {
     return (req: Request, res: Response, next: NextFunction): any => {
         const validationResponse: any = validation({
             ...req.body,

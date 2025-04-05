@@ -1,9 +1,9 @@
-import { Router } from 'express';
 import sellerController from '@controllers/seller.controller';
 import { authGuard } from '@middlewares/authGuard.middleware';
 import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
 import { createSellerValidate } from '@validators/seller.validation';
+import { Router } from 'express';
 
 // /seller
 const sellerRouter = Router();

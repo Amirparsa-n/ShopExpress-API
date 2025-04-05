@@ -1,7 +1,11 @@
+/* eslint-disable n/no-unpublished-import */
 import '../configs/loadTestEnv';
+
+import type TestAgent from 'supertest/lib/agent';
+
 import supertest from 'supertest';
+
 import { bootstrap } from '../index';
-import TestAgent from 'supertest/lib/agent';
 
 let server: any;
 let request: TestAgent<supertest.Test>;
@@ -18,21 +22,21 @@ afterAll(async () => {
 });
 
 describe('sendOTP', () => {
-    test('Test 200', async () => {
+    test('200', async () => {
         const response = await request.post('/api/auth/sendOTP').send({ phone: '09123456789' });
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('OTP sent successfully');
     });
 
-    test('Test validation 400', async () => {
+    test('validation 400', async () => {
         const response = await request.post('/api/auth/sendOTP').send({});
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Phone number is required');
     });
 
-    test('Test banned users', async () => {
+    test('banned users', async () => {
         // Assuming a banned phone number exists in the database
         const response = await request.post('/api/auth/sendOTP').send({ phone: '09111111111' });
 

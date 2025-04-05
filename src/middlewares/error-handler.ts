@@ -1,9 +1,11 @@
-// import { log } from '@utils/logger';
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction): any => {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const status = err.status || 500;
+// import { log } from '@utils/logger';
+import { config } from '@configs/config';
+
+const errorHandler = (err: any, req: Request, res: Response, next: NextFunction): Response => {
+    const isProduction = config.get('isProduction');
+    const status = err.status ?? 500;
     console.error('Error:', err);
 
     // log({
@@ -22,11 +24,11 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
         });
     }
 
-    if (err['multerError']) {
+    if (err.multerError) {
         return res.status(422).json({
             success: false,
-            message: err.message || 'Invalid file uploaded.',
-            errors: err.errors || null,
+            message: err.message ?? 'Invalid file uploaded.',
+            errors: err.errors ?? null,
         });
     }
 
@@ -38,9 +40,9 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
     } else {
         return res.status(status).json({
             success: false,
-            message: err.message || 'An unexpected error occurred.',
+            message: err.message ?? 'An unexpected error occurred.',
             stack: err.stack,
-            errors: err.errors || null,
+            errors: err.errors ?? null,
         });
     }
 };

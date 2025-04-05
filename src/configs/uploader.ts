@@ -1,10 +1,12 @@
-import path from 'path';
-import multer, { FileFilterCallback } from 'multer';
-import sharp from 'sharp';
-import fs from 'fs';
-import { Request } from 'express';
+import type { Request } from 'express';
+import type { FileFilterCallback } from 'multer';
 
-type Type = 'image' | 'video' | 'audio' | 'file';
+import multer from 'multer';
+import fs from 'node:fs';
+import path from 'node:path';
+import sharp from 'sharp';
+
+type Type = 'audio' | 'file' | 'image' | 'video';
 
 const storage = multer.memoryStorage();
 // const storage = multer.diskStorage({
@@ -50,7 +52,7 @@ const fileFilterHandler = (type: Type) => {
             const error: any = new Error(
                 `Invalid file type for ${type}. Valid formats are: ${validMimeTypes[type].join(', ')}`
             );
-            error['multerError'] = true;
+            error.multerError = true;
             return cb(error);
         }
 

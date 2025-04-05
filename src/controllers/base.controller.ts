@@ -1,27 +1,7 @@
-import { Request, Response } from 'express';
-import { RootFilterQuery } from 'mongoose';
+import type { Request, Response } from 'express';
+import type { RootFilterQuery } from 'mongoose';
 
 export class BaseController {
-    /**
-     * send success response
-     * @param res Response
-     * @param data response data
-     * @param message success message
-     * @param statusCode HTTP status code
-     */
-    successResponse(res: Response, data: any = null, message: string = 'Success', statusCode: number = 200): Response {
-        const response: Record<string, any> = {
-            success: true,
-            message,
-        };
-
-        if (data !== null) {
-            response.data = data;
-        }
-
-        return res.status(statusCode).json(response);
-    }
-
     /**
      * send error response
      * @param res Response
@@ -49,8 +29,9 @@ export class BaseController {
      * @param defaultValue default value of param
      */
     getParam(req: Request, key: string, defaultValue: any = null): any {
-        return req.body[key] || req.query[key] || defaultValue;
+        return req.body[key] ?? req.query[key] ?? defaultValue;
     }
+
     /**
      * return unique slug
      * @param model
@@ -64,7 +45,7 @@ export class BaseController {
         if (!existingSlug) {
             return currentSlug;
         }
-        return await this.getUniqueSlug(model, baseSlug, counter + 1);
+        return this.getUniqueSlug(model, baseSlug, counter + 1);
     }
 
     /**
@@ -78,10 +59,10 @@ export class BaseController {
      */
     async handlePagination(
         dataKey: string,
-        page: number = 1,
-        limit: number = 10,
         model: any,
         query: RootFilterQuery<any> = {},
+        page: number = 1,
+        limit: number = 10,
         populate: string[] = []
     ) {
         const startIndex = (page - 1) * limit;
@@ -111,5 +92,25 @@ export class BaseController {
                 prevPage: page > 1 ? page - 1 : null,
             },
         };
+    }
+
+    /**
+     * send success response
+     * @param res Response
+     * @param data response data
+     * @param message success message
+     * @param statusCode HTTP status code
+     */
+    successResponse(res: Response, data: any = null, message: string = 'Success', statusCode: number = 200): Response {
+        const response: Record<string, any> = {
+            success: true,
+            message,
+        };
+
+        if (data !== null) {
+            response.data = data;
+        }
+
+        return res.status(statusCode).json(response);
     }
 }

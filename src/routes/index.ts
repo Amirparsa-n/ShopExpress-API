@@ -1,9 +1,10 @@
 import { Router } from 'express';
+
 import authRouter from './auth.routes';
-import userRoute from './user.routes';
-import sellerRouter from './seller.routes';
-import locationRouter from './location.routes';
 import categoryRouter from './category.routes';
+import locationRouter from './location.routes';
+import sellerRouter from './seller.routes';
+import userRoute from './user.routes';
 
 const router = Router();
 
