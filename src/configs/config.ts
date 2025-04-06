@@ -1,8 +1,12 @@
 /* eslint-disable n/no-process-env */
 import { Config } from '@fullstacksjs/config';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
+
+// Define a global variable for the public directory path
+const publicDir = path.join(__dirname, '..', '..', 'public');
 
 const schema = new Config({
     isProduction: Config.boolean().required(),
@@ -20,4 +24,4 @@ const config = schema.parse({
     jwtSecretKey: process.env.JWT_SECRET,
 });
 
-export { config };
+export { config, publicDir };

@@ -1,7 +1,23 @@
 import type { Request, Response } from 'express';
 import type { RootFilterQuery } from 'mongoose';
 
+import * as fs from 'node:fs/promises';
+
 export class BaseController {
+    /**
+     * Delete a file from the filesystem
+     * @param filePath Path to the file
+     * @returns Promise<void>
+     */
+    async deleteFile(filePath: string): Promise<void> {
+        try {
+            await fs.unlink(filePath);
+        } catch (error) {
+            console.error(`Error deleting file at ${filePath}:`, error);
+            throw new Error('Failed to delete file');
+        }
+    }
+
     /**
      * send error response
      * @param res Response
@@ -12,7 +28,7 @@ export class BaseController {
     errorResponse(
         res: Response,
         message: string = 'Something went wrong',
-        statusCode: number = 500,
+        statusCode: number = 400,
         errors: any = null
     ): Response {
         return res.status(statusCode).json({

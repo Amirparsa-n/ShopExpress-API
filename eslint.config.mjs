@@ -16,5 +16,6 @@ export default defineConfig({
             },
         ],
         '@typescript-eslint/no-misused-promises': 'off',
+        '@typescript-eslint/no-unnecessary-condition': 'off',
     },
 });

@@ -19,4 +19,15 @@ categoryRouter
         categoryController.createCategory
     );
 
+categoryRouter
+    .route('/:id')
+    .delete(authGuard, roleGuard('admin'), categoryController.deleteCategory)
+    .patch(
+        authGuard,
+        roleGuard('admin'),
+        uploader(1, 'image').single('icon'),
+        V({ body: categorySchema }),
+        categoryController.editCategory
+    );
+
 export default categoryRouter;
