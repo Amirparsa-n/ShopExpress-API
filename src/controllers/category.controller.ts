@@ -7,6 +7,7 @@ import { isValidObjectId } from 'mongoose';
 import path from 'node:path';
 
 import { BaseController } from './base.controller';
+import subCategoryModel from '@models/subCategory.model';
 
 class CategoryController extends BaseController {
     createCategory = async (req: Request, res: Response): Promise<any> => {
@@ -33,6 +34,33 @@ class CategoryController extends BaseController {
         const category = await categoryModel.create({ title, slug, parent, description, filters, icon });
 
         return this.successResponse(res, category, 'Category created successfully');
+    };
+
+    createSubcategory = async (req: Request, res: Response): Promise<any> => {
+        const { title, parent, description, filters } = req.body;
+        let { slug } = req.body;
+
+        const parentCategory = await categoryModel.findById(parent);
+        if (!parentCategory) {
+            return this.errorResponse(res, 'Parent category not found', 404);
+        }
+
+        slug = await this.getUniqueSlug(categoryModel, slug);
+
+        let icon = null;
+        if (req.file) {
+            const uploadDir = path.join(publicDir, 'uploads', 'images');
+            const filePath = await saveFile(req.file, uploadDir);
+
+            icon = {
+                filename: req.file.originalname,
+                path: filePath,
+            };
+        }
+
+        const subcategory = await subCategoryModel.create({ title, slug, parent, description, filters, icon });
+
+        return this.successResponse(res, subcategory, 'Subcategory created successfully');
     };
 
     deleteCategory = async (req: Request, res: Response): Promise<any> => {

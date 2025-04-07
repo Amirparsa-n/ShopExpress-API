@@ -6,33 +6,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
-type Type = 'audio' | 'file' | 'image' | 'video';
+export type FileType = 'audio' | 'file' | 'image' | 'video';
 
 const storage = multer.memoryStorage();
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         let folderPath: string;
-//         const mimeType = file.mimetype;
 
-//         if (mimeType.startsWith('image/')) {
-//             folderPath = path.join(__dirname, '..', '..', 'public', 'uploads', 'images');
-//         } else if (mimeType.startsWith('video/')) {
-//             folderPath = path.join(__dirname, '..', '..', 'public', 'uploads', 'videos');
-//         } else if (mimeType.startsWith('audio/')) {
-//             folderPath = path.join(__dirname, '..', '..', 'public', 'uploads', 'audio');
-//         } else {
-//             folderPath = path.join(__dirname, '..', '..', 'public', 'uploads', 'files');
-//         }
-
-//         fs.mkdirSync(folderPath, { recursive: true });
-//         cb(null, folderPath);
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, Date.now() + path.extname(file.originalname));
-//     },
-// });
-
-const validMimeTypes = {
+export const validMimeTypes = {
     image: ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'],
     video: ['video/mp4', 'video/mkv', 'video/webm'],
     audio: ['audio/mpeg', 'audio/wav', 'audio/ogg'],
@@ -43,7 +21,7 @@ const validMimeTypes = {
     ],
 };
 
-const fileFilterHandler = (type: Type) => {
+const fileFilterHandler = (type: FileType) => {
     return (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
         const mimeType = file.mimetype;
 
@@ -60,7 +38,7 @@ const fileFilterHandler = (type: Type) => {
     };
 };
 
-export const uploader = (maxSizeInMB: number, type: Type) => {
+export const uploader = (maxSizeInMB: number, type: FileType) => {
     return multer({
         storage,
         fileFilter: fileFilterHandler(type),

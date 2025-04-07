@@ -1,8 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { AnyZodObject } from 'zod';
 
-import { ZodError } from 'zod';
-
 interface ValidationSchema {
     body?: AnyZodObject;
     query?: AnyZodObject;
@@ -23,11 +21,7 @@ export const V = (schema: ValidationSchema) => {
             }
             next();
         } catch (error) {
-            if (error instanceof ZodError) {
-                next(error);
-            } else {
-                next(error);
-            }
+            next(error);
         }
     };
 };

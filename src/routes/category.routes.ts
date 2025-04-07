@@ -3,7 +3,7 @@ import categoryController from '@controllers/category.controller';
 import { authGuard } from '@middlewares/authGuard.middleware';
 import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
-import { categorySchema } from '@validators/category.validation';
+import { categorySchema, subCategorySchema } from '@validators/category.validation';
 import { Router } from 'express';
 
 const categoryRouter = Router();
@@ -28,6 +28,17 @@ categoryRouter
         uploader(1, 'image').single('icon'),
         V({ body: categorySchema }),
         categoryController.editCategory
+    );
+
+// Subcategory
+categoryRouter
+    .route('/sub')
+    .post(
+        authGuard,
+        roleGuard('admin'),
+        uploader(1, 'image').single('icon'),
+        V({ body: subCategorySchema }),
+        categoryController.createSubcategory
     );
 
 export default categoryRouter;
