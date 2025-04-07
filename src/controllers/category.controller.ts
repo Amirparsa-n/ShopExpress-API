@@ -83,6 +83,18 @@ class CategoryController extends BaseController {
         return this.successResponse(res, null, 'Category deleted successfully');
     };
 
+    deleteSubcategory = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+
+        const deletedCategory = await subCategoryModel.findByIdAndDelete(id);
+
+        if (!deletedCategory) {
+            return this.errorResponse(res, 'Category not found!', 404);
+        }
+
+        return this.successResponse(res, {}, 'Deleted category successfully');
+    };
+
     editCategory = async (req: Request, res: Response): Promise<any> => {
         const { id } = req.params;
         const { title, parent, description, filters } = req.body;
@@ -125,6 +137,30 @@ class CategoryController extends BaseController {
         );
 
         return this.successResponse(res, updatedCategory, 'Category updated successfully');
+    };
+
+    getAllCategory = async (req: Request, res: Response): Promise<any> => {
+        const categories = await categoryModel.find({});
+
+        this.successResponse(res, categories);
+    };
+
+    getAllSubcategories = async (req: Request, res: Response): Promise<any> => {
+        const subcategories = await subCategoryModel.find({});
+
+        this.successResponse(res, subcategories);
+    };
+
+    getSubcategory = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+
+        const subcategory = await subCategoryModel.findOne({ _id: id });
+
+        if (!subcategory) {
+            return this.errorResponse(res, 'Category not found!', 404);
+        }
+
+        return this.successResponse(res, subcategory);
     };
 }
 

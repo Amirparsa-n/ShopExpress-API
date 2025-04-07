@@ -27,7 +27,8 @@ export const categorySchema = z.object({
         .refine((file) => validMimeTypes.image.includes(file.type), {
             message: `Please upload a valid image file (${validMimeTypes.image.join(', ')}).`,
         })
-        .nullable(),
+        .nullable()
+        .optional(),
 });
 
 export const subCategorySchema = z.object({
@@ -40,7 +41,9 @@ export const subCategorySchema = z.object({
             'Slug can only contain lowercase letters(a-z), numbers(0-9),underscore (_), and hyphens (-)'
         )
         .max(255),
-    parent: z.instanceof(mongoose.Schema.ObjectId).optional().nullable(),
+    parent: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+        message: 'Invalid ObjectId format',
+    }),
     description: z.string().trim(),
     filters: z.array(categoryFiltersSchema).optional(),
 });

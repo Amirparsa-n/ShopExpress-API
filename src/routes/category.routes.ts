@@ -4,6 +4,7 @@ import { authGuard } from '@middlewares/authGuard.middleware';
 import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
 import { categorySchema, subCategorySchema } from '@validators/category.validation';
+import { objectIdSchema } from '@validators/validation';
 import { Router } from 'express';
 
 const categoryRouter = Router();
@@ -11,6 +12,7 @@ const categoryRouter = Router();
 // Admin
 categoryRouter
     .route('/')
+    .get(categoryController.getAllCategory)
     .post(
         authGuard,
         roleGuard('admin'),
@@ -32,7 +34,8 @@ categoryRouter
 
 // Subcategory
 categoryRouter
-    .route('/sub')
+    .route('/sub/')
+    .get(categoryController.getAllSubcategories)
     .post(
         authGuard,
         roleGuard('admin'),
@@ -40,5 +43,10 @@ categoryRouter
         V({ body: subCategorySchema }),
         categoryController.createSubcategory
     );
+
+categoryRouter
+    .route('/sub/:id')
+    .get(V({ params: objectIdSchema }), categoryController.getSubcategory)
+    .delete(authGuard, roleGuard('admin'), V({ params: objectIdSchema }), categoryController.deleteSubcategory);
 
 export default categoryRouter;
