@@ -17,7 +17,13 @@ export const categorySchema = z.object({
     title: z.string().max(255).trim(),
     slug: z.string().max(255).trim().toLowerCase(),
     description: z.string().max(255).optional(),
-    parent: z.instanceof(mongoose.Schema.ObjectId).optional().nullable(),
+    parent: z
+        .string()
+        .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+            message: 'Invalid ObjectId format',
+        })
+        .nullable()
+        .optional(),
     filters: z.array(categoryFiltersSchema).optional(),
     icon: z
         .instanceof(File)

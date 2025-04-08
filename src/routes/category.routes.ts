@@ -24,7 +24,7 @@ categoryRouter
 categoryRouter
     .route('/:id')
     .delete(authGuard, roleGuard('admin'), categoryController.deleteCategory)
-    .patch(
+    .put(
         authGuard,
         roleGuard('admin'),
         uploader(1, 'image').single('icon'),
@@ -47,6 +47,7 @@ categoryRouter
 categoryRouter
     .route('/sub/:id')
     .get(V({ params: objectIdSchema }), categoryController.getSubcategory)
+    .put(authGuard, roleGuard('admin'), V({ body: subCategorySchema }), categoryController.editSubcategory)
     .delete(authGuard, roleGuard('admin'), V({ params: objectIdSchema }), categoryController.deleteSubcategory);
 
 export default categoryRouter;
