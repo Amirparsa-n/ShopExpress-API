@@ -2,7 +2,6 @@ import type { Model } from 'mongoose';
 import type { Product, ProductSeller } from 'src/types/product.types';
 
 import mongoose from 'mongoose';
-import { string } from 'zod';
 
 const sellersSchema = new mongoose.Schema<ProductSeller, Model<ProductSeller>>({
     seller: {
@@ -55,6 +54,11 @@ const productSchema = new mongoose.Schema<Product, Model<Product>>(
         filterValues: {
             type: Map,
             of: mongoose.Schema.Types.Mixed,
+            required: true,
+        },
+        customFilters: {
+            type: Map,
+            of: String,
             required: true,
         },
         shortIdentifier: {

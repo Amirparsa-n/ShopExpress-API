@@ -9,6 +9,7 @@ export interface Product {
     images: string[];
     sellers: ProductSeller[];
     filterValues: Map<string, any>;
+    customFilters: Map<string, any>;
     shortIdentifier: string;
     createdAt?: Date;
     updatedAt?: Date;
