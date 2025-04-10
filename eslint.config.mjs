@@ -9,12 +9,6 @@ export default defineConfig({
         tsconfigRootDir: './tsconfig.json',
     },
     rules: {
-        'prettier/prettier': [
-            'error',
-            {
-                endOfLine: 'auto',
-            },
-        ],
         '@typescript-eslint/no-misused-promises': 'off',
         '@typescript-eslint/no-unnecessary-condition': 'off',
     },

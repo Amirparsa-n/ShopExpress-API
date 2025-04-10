@@ -60,7 +60,7 @@ class CategoryController extends BaseController {
 
         const subcategory = await subCategoryModel.create({ title, slug, parent, description, filters, icon });
 
-        return this.successResponse(res, null, 'Subcategory created successfully');
+        return this.successResponse(res, subcategory, 'Subcategory created successfully');
     };
 
     deleteCategory = async (req: Request, res: Response): Promise<any> => {
