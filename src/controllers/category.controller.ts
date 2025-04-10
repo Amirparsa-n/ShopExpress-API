@@ -1,11 +1,10 @@
 import type { Request, Response } from 'express';
-import type mongoose from 'mongoose';
 
 import { publicDir } from '@configs/config';
 import categoryModel from '@models/category.model';
 import subCategoryModel from '@models/subCategory.model';
 import { saveFile } from '@utils/saveFile';
-import { isValidObjectId, ObjectId } from 'mongoose';
+import { isValidObjectId } from 'mongoose';
 import path from 'node:path';
 
 import { BaseController } from './base.controller';
