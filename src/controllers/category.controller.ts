@@ -1,10 +1,11 @@
 import type { Request, Response } from 'express';
+import type mongoose from 'mongoose';
 
 import { publicDir } from '@configs/config';
 import categoryModel from '@models/category.model';
 import subCategoryModel from '@models/subCategory.model';
 import { saveFile } from '@utils/saveFile';
-import { isValidObjectId } from 'mongoose';
+import { isValidObjectId, ObjectId } from 'mongoose';
 import path from 'node:path';
 
 import { BaseController } from './base.controller';
@@ -166,9 +167,31 @@ class CategoryController extends BaseController {
     };
 
     getAllCategory = async (req: Request, res: Response): Promise<any> => {
-        const categories = await categoryModel.find({});
+        const fetchCategoriesWithSubs = async (parentId: string | null) => {
+            const categories = await categoryModel.find({ parent: parentId }).lean();
+            const subcategories = await subCategoryModel.find({ parent: parentId }).lean();
 
-        this.successResponse(res, categories);
+            const result = [...categories];
+
+            await Promise.all(
+                result.map(async (category) => {
+                    const childCategories = await fetchCategoriesWithSubs(category._id);
+                    const categorySubcategories = subcategories.filter(
+                        (sub) => sub.parent.toString() === category._id.toString()
+                    );
+
+                    (category as any).children = {
+                        categories: childCategories,
+                        subcategories: categorySubcategories,
+                    };
+                })
+            );
+
+            return result;
+        };
+
+        const categories = await fetchCategoriesWithSubs(null);
+        return this.successResponse(res, categories);
     };
 
     getAllSubcategories = async (req: Request, res: Response): Promise<any> => {

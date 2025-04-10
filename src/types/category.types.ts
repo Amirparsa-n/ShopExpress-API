@@ -1,5 +1,5 @@
 export interface Category {
-    _id: number;
+    _id: string;
     title: string;
     slug: string;
     description: string;
@@ -21,7 +21,7 @@ export interface CategoryFilter {
 }
 
 export interface Subcategory {
-    _id: number;
+    _id: string;
     title: string;
     slug: string;
     description: string;
