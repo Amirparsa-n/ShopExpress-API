@@ -1,17 +1,20 @@
 import type { Request, Response } from 'express';
 import type { RootFilterQuery } from 'mongoose';
 
+import { publicDir } from '@configs/config';
 import * as fs from 'node:fs/promises';
+import path from 'node:path';
 
 export class BaseController {
     /**
      * Delete a file from the filesystem
-     * @param filePath Path to the file
+     * @param targetFilePath Path to the file
      * @returns Promise<void>
      */
     async deleteFile(filePath: string): Promise<void> {
         try {
-            await fs.unlink(filePath);
+            const targetFilePath = path.join(publicDir, filePath);
+            await fs.unlink(targetFilePath);
         } catch (error) {
             console.error(`Error deleting file at ${filePath}:`, error);
             throw new Error('Failed to delete file');

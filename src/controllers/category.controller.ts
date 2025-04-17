@@ -1,11 +1,9 @@
 import type { Request, Response } from 'express';
 
-import { publicDir } from '@configs/config';
 import categoryModel from '@models/category.model';
 import subCategoryModel from '@models/subCategory.model';
 import { saveFile } from '@utils/saveFile';
 import { isValidObjectId } from 'mongoose';
-import path from 'node:path';
 
 import { BaseController } from './base.controller';
 
@@ -22,8 +20,7 @@ class CategoryController extends BaseController {
 
         let icon = null;
         if (req.file) {
-            const uploadDir = path.join(publicDir, 'uploads', 'images');
-            const filePath = await saveFile(req.file, uploadDir);
+            const filePath = await saveFile(req.file, ['images']);
 
             icon = {
                 filename: req.file.originalname,
@@ -49,8 +46,7 @@ class CategoryController extends BaseController {
 
         let icon = null;
         if (req.file) {
-            const uploadDir = path.join(publicDir, 'uploads', 'images');
-            const filePath = await saveFile(req.file, uploadDir);
+            const filePath = await saveFile(req.file, ['images']);
 
             icon = {
                 filename: req.file.originalname,
@@ -76,8 +72,7 @@ class CategoryController extends BaseController {
         }
 
         if (category.icon) {
-            const filePath = path.join(publicDir, category.icon.path);
-            await this.deleteFile(filePath);
+            await this.deleteFile(category.icon.path);
         }
 
         return this.successResponse(res, null, 'Category deleted successfully');
@@ -114,12 +109,10 @@ class CategoryController extends BaseController {
         let icon = null;
         if (req.file) {
             if (category.icon) {
-                const filePath = path.join(publicDir, category.icon.path);
-                await this.deleteFile(filePath);
+                await this.deleteFile(category.icon.path);
             }
 
-            const uploadDir = path.join(publicDir, 'uploads', 'images');
-            const filePath = await saveFile(req.file, uploadDir);
+            const filePath = await saveFile(req.file, ['images']);
             icon = {
                 filename: req.file.originalname,
                 path: filePath,

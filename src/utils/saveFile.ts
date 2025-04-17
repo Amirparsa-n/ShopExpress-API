@@ -1,3 +1,4 @@
+import { publicDir } from '@configs/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -12,12 +13,14 @@ import sharp from 'sharp';
  */
 export async function saveFile(
     file: Express.Multer.File | undefined,
-    uploadDir: string,
+    uploadPath: string[],
     compressOptions?: { width?: number; quality?: number }
 ): Promise<string> {
     if (!file) {
         throw new Error('No file provided.');
     }
+
+    const uploadDir = path.join(publicDir, 'uploads', ...uploadPath);
 
     // Create the upload directory if it doesn't exist
     if (!fs.existsSync(uploadDir)) {
