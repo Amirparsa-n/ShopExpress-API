@@ -80,6 +80,27 @@ class ProductController extends BaseController {
 
         return this.successResponse(res, { product }, 'Product deleted successfully!');
     };
+
+    getProductDetails = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+        if (!isValidObjectId(id)) {
+            return this.errorResponse(res, 'Invalid product ID', 400);
+        }
+
+        const product = await productModel.findOne({ _id: id }).populate('subCategory').populate('sellers.seller');
+        if (!product) {
+            return this.errorResponse(res, 'Product not found', 404);
+        }
+
+        const { images, ...productDetails } = product.toObject();
+        const imageUrls = images.map((image) => this.getFileUrl(image));
+        const productWithImageUrls = {
+            ...productDetails,
+            images: imageUrls,
+        };
+
+        return this.successResponse(res, productWithImageUrls);
+    };
 }
 
 export default new ProductController();

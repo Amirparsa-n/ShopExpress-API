@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import type { RootFilterQuery } from 'mongoose';
 
-import { publicDir } from '@configs/config';
+import { config, publicDir } from '@configs/config';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -19,6 +19,15 @@ export class BaseController {
             console.error(`Error deleting file at ${filePath}:`, error);
             throw new Error('Failed to delete file');
         }
+    }
+
+    /**
+     * Generate a full URL for a given file path
+     * @param filePath Path to the file
+     * @returns Full URL as a string
+     */
+    getFileUrl(filePath: string): string {
+        return `${config.get('BASE_URL')}/${filePath}`;
     }
 
     /**
