@@ -3,12 +3,11 @@ import type { productSchema } from '@validators/product.validation';
 import type { Request, Response } from 'express';
 import type { z } from 'zod';
 
-import { publicDir } from '@configs/config';
 import productModel from '@models/product.model';
 import subCategoryModel from '@models/subCategory.model';
 import { findUniqueIdentifier, isValidateSeller } from '@services/Product.service';
 import { saveFile } from '@utils/saveFile';
-import path from 'node:path';
+import { isValidObjectId } from 'mongoose';
 
 import { BaseController } from './base.controller';
 
@@ -39,9 +38,8 @@ class ProductController extends BaseController {
 
         slug = await this.getUniqueSlug(productModel, slug);
 
-        const uploadDir = path.join(publicDir, 'uploads', 'images', 'products');
         const files = Array.isArray(req.files) ? req.files : [];
-        const images = await Promise.all(files.map((file) => saveFile(file, uploadDir)));
+        const images = await Promise.all(files.map((file) => saveFile(file, ['images', 'products'])));
 
         const newProduct = await productModel.create({
             name,
@@ -60,6 +58,27 @@ class ProductController extends BaseController {
         });
 
         return this.successResponse(res, newProduct, 'Product created successfully!');
+    };
+
+    deleteProduct = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+
+        if (!isValidObjectId(id)) {
+            return this.errorResponse(res, 'Invalid product ID', 400);
+        }
+
+        const product = await productModel.findById(id);
+        if (!product) {
+            return this.errorResponse(res, 'Product not found', 404);
+        }
+
+        for (const image of product.images) {
+            await this.deleteFile(image);
+        }
+
+        await productModel.deleteOne({ _id: product.id });
+
+        return this.successResponse(res, { product }, 'Product deleted successfully!');
     };
 }
 

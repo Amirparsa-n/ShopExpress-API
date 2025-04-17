@@ -18,4 +18,6 @@ productRouter
         productController.create
     );
 
+productRouter.route('/:id').delete(authGuard, roleGuard('admin'), productController.deleteProduct);
+
 export default productRouter;
