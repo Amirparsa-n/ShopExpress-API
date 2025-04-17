@@ -1,26 +1,39 @@
+/* eslint-disable no-await-in-loop */
+import type { productSchema } from '@validators/product.validation';
 import type { Request, Response } from 'express';
-import type { Product } from 'src/types/product.types';
+import type { z } from 'zod';
 
 import { publicDir } from '@configs/config';
 import productModel from '@models/product.model';
-import { findUniqueIdentifier } from '@services/Product.service';
+import subCategoryModel from '@models/subCategory.model';
+import { findUniqueIdentifier, isValidateSeller } from '@services/Product.service';
 import { saveFile } from '@utils/saveFile';
 import path from 'node:path';
 
 import { BaseController } from './base.controller';
 
 class ProductController extends BaseController {
-    create = async (req: Request<any, any, Product>, res: Response): Promise<any> => {
+    create = async (req: Request<any, any, z.infer<typeof productSchema>>, res: Response): Promise<any> => {
         const { name, description, subCategory } = req.body;
         let { slug, sellers, filterValues, customFilters } = req.body;
 
-        sellers = JSON.parse(sellers as any);
-        filterValues = JSON.parse(filterValues as any);
-        customFilters = JSON.parse(customFilters as any);
+        sellers = typeof customFilters === 'string' ? JSON.parse(sellers as any) : sellers;
+        filterValues = typeof filterValues === 'string' ? JSON.parse(filterValues as any) : filterValues;
+        customFilters = typeof customFilters === 'string' ? JSON.parse(customFilters as any) : customFilters;
+
+        const currentSubCategory = await subCategoryModel.findById(subCategory);
+        if (!currentSubCategory) {
+            return this.errorResponse(res, 'SubCategory not found', 400);
+        }
+
+        // Validate Sellers
+        const isValidSeller = await isValidateSeller(sellers);
+        if (!isValidSeller) {
+            return this.errorResponse(res, 'Invalid seller ID', 400);
+        }
 
         let shortIdentifier: string | null;
         do {
-            // eslint-disable-next-line no-await-in-loop
             shortIdentifier = await findUniqueIdentifier();
         } while (!shortIdentifier);
 
@@ -37,7 +50,11 @@ class ProductController extends BaseController {
             description,
             filterValues,
             images,
-            sellers,
+            sellers: sellers.map((seller) => ({
+                seller: seller.id,
+                price: seller.price,
+                stock: seller.stock,
+            })),
             shortIdentifier,
             subCategory,
         });
