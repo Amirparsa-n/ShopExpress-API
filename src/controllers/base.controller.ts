@@ -22,15 +22,6 @@ export class BaseController {
     }
 
     /**
-     * Generate a full URL for a given file path
-     * @param filePath Path to the file
-     * @returns Full URL as a string
-     */
-    getFileUrl(filePath: string): string {
-        return `${config.get('BASE_URL')}/${filePath}`;
-    }
-
-    /**
      * send error response
      * @param res Response
      * @param message error message
@@ -48,6 +39,15 @@ export class BaseController {
             message,
             errors,
         });
+    }
+
+    /**
+     * Generate a full URL for a given file path
+     * @param filePath Path to the file
+     * @returns Full URL as a string
+     */
+    getFileUrl(filePath: string): string {
+        return `${config.get('BASE_URL')}/${filePath}`;
     }
 
     /**
@@ -91,7 +91,7 @@ export class BaseController {
         query: RootFilterQuery<any> = {},
         page: number = 1,
         limit: number = 10,
-        populate: string[] = []
+        populate: any[] = []
     ) {
         const startIndex = (page - 1) * limit;
         const total = await model.countDocuments(query);

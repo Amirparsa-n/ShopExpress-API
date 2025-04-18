@@ -10,6 +10,7 @@ import { saveFile } from '@utils/saveFile';
 import { isValidObjectId } from 'mongoose';
 
 import { BaseController } from './base.controller';
+import noteModel from '@models/note.model';
 
 class ProductController extends BaseController {
     create = async (req: Request<any, any, z.infer<typeof productSchema>>, res: Response): Promise<any> => {
@@ -77,6 +78,9 @@ class ProductController extends BaseController {
         }
 
         await productModel.deleteOne({ _id: product.id });
+
+        // Delete all notes related to the product
+        await noteModel.deleteMany({ product: product.id });
 
         return this.successResponse(res, { product }, 'Product deleted successfully!');
     };

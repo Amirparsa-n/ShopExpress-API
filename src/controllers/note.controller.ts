@@ -54,6 +54,18 @@ class NoteController extends BaseController {
         return this.successResponse(res, note);
     };
 
+    getNotes = async (req: Request<any, any, any, { page: string; limit: string }>, res: Response): Promise<any> => {
+        const { page, limit } = req.query;
+        const user = req.user;
+
+        const notes = await this.handlePagination('notes', noteModel, { user: user._id }, +page, +limit, [
+            'product',
+            { path: 'user', select: 'firstName lastName phone email' },
+        ]);
+
+        return this.successResponse(res, notes);
+    };
+
     // removeNote = async (req: Request, res: Response): Promise<any> => {};
 }
 export default new NoteController();

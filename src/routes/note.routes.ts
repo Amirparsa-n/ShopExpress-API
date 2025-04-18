@@ -6,7 +6,11 @@ import { Router } from 'express';
 
 const noteRouter = Router();
 
-noteRouter.route('/').post(authGuard, V({ body: noteSchema }), noteController.addNote);
+noteRouter
+    .use(authGuard)
+    .route('/?')
+    .get(noteController.getNotes)
+    .post(V({ body: noteSchema }), noteController.addNote);
 
 noteRouter.use(authGuard).route('/:id').get(noteController.getNote);
 // .put(noteController.editNote)
