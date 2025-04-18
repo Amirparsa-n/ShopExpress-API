@@ -32,7 +32,27 @@ class NoteController extends BaseController {
 
     // editNote = async (req: Request, res: Response): Promise<any> => {};
 
-    // getNote = async (req: Request, res: Response): Promise<any> => {};
+    getNote = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+        const user = req.user;
+
+        const note = await noteModel
+            .findOne({ _id: id, user: user._id })
+            .populate('product')
+            .populate('user', 'firstName lastName phone email')
+            .lean();
+
+        if (!note) {
+            return this.errorResponse(res, 'Note not found', 404);
+        }
+
+        if (!note.product) {
+            await noteModel.findByIdAndDelete(id);
+            return this.errorResponse(res, 'This Product has been removed !!', 404);
+        }
+
+        return this.successResponse(res, note);
+    };
 
     // removeNote = async (req: Request, res: Response): Promise<any> => {};
 }
