@@ -6,6 +6,7 @@ import locationRouter from './location.routes';
 import noteRouter from './note.routes';
 import productRouter from './product.routes';
 import sellerRouter from './seller.routes';
+import shortLinkRouter from './shortLisk.routes';
 import userRoute from './user.routes';
 
 const router = Router();
@@ -17,5 +18,6 @@ router.use('/locations', locationRouter);
 router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
 router.use('/notes', noteRouter);
+router.use('/short', shortLinkRouter);
 
 export default router;
