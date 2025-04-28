@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 
 import noteModel from '@models/note.model';
 import productModel from '@models/product.model';
+import { isValidObjectId } from 'mongoose';
 
 import { BaseController } from './base.controller';
 
@@ -66,6 +67,21 @@ class NoteController extends BaseController {
         return this.successResponse(res, notes);
     };
 
-    // removeNote = async (req: Request, res: Response): Promise<any> => {};
+    removeNote = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+        const user = req.user;
+
+        if (!isValidObjectId(id)) {
+            return this.errorResponse(res, 'Invalid note ID', 400);
+        }
+
+        const existingNote = await noteModel.findOne({ _id: id, user: user._id });
+        if (!existingNote) {
+            return this.errorResponse(res, 'Note not found', 404);
+        }
+
+        await noteModel.findByIdAndDelete(id);
+        return this.successResponse(res, null, 'Note deleted successfully');
+    };
 }
 export default new NoteController();

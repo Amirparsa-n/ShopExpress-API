@@ -12,8 +12,7 @@ noteRouter
     .get(noteController.getNotes)
     .post(V({ body: noteSchema }), noteController.addNote);
 
-noteRouter.use(authGuard).route('/:id').get(noteController.getNote);
+noteRouter.use(authGuard).route('/:id').get(noteController.getNote).delete(noteController.removeNote);
 // .put(noteController.editNote)
-// .delete(noteController.removeNote);
 
 export default noteRouter;
