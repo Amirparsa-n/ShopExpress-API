@@ -31,7 +31,23 @@ class NoteController extends BaseController {
         return this.successResponse(res, newNote, 'Note added successfully');
     };
 
-    // editNote = async (req: Request, res: Response): Promise<any> => {};
+    editNote = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+        const user = req.user;
+        const { content } = req.body;
+
+        if (!isValidObjectId(id)) {
+            return this.errorResponse(res, 'Invalid note ID', 400);
+        }
+
+        const existingNote = await noteModel.findOne({ _id: id, user: user._id });
+        if (!existingNote) {
+            return this.errorResponse(res, 'Note not found', 404);
+        }
+
+        const updatedNote = await noteModel.findByIdAndUpdate(id, { content }, { new: true });
+        return this.successResponse(res, updatedNote, 'Note updated successfully');
+    };
 
     getNote = async (req: Request, res: Response): Promise<any> => {
         const { id } = req.params;
