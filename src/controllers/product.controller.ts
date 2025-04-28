@@ -1,8 +1,9 @@
 /* eslint-disable no-await-in-loop */
-import type { productSchema } from '@validators/product.validation';
+import type { createProductSchema, updateProductSchema } from '@validators/product.validation';
 import type { Request, Response } from 'express';
 import type { z } from 'zod';
 
+import noteModel from '@models/note.model';
 import productModel from '@models/product.model';
 import subCategoryModel from '@models/subCategory.model';
 import { findUniqueIdentifier, isValidateSeller } from '@services/Product.service';
@@ -10,10 +11,9 @@ import { saveFile } from '@utils/saveFile';
 import { isValidObjectId } from 'mongoose';
 
 import { BaseController } from './base.controller';
-import noteModel from '@models/note.model';
 
 class ProductController extends BaseController {
-    create = async (req: Request<any, any, z.infer<typeof productSchema>>, res: Response): Promise<any> => {
+    create = async (req: Request<any, any, z.infer<typeof createProductSchema>>, res: Response): Promise<any> => {
         const { name, description, subCategory } = req.body;
         let { slug, sellers, filterValues, customFilters } = req.body;
 
@@ -104,6 +104,64 @@ class ProductController extends BaseController {
         };
 
         return this.successResponse(res, productWithImageUrls);
+    };
+
+    update = async (req: Request<any, any, z.infer<typeof updateProductSchema>>, res: Response): Promise<any> => {
+        const { id } = req.params;
+        const { name, description, subCategory, deleteImages } = req.body;
+        let { slug, filterValues, customFilters } = req.body;
+
+        const product = await productModel.findById(id);
+        if (!product) {
+            return this.errorResponse(res, 'Product not found', 404);
+        }
+
+        filterValues = typeof filterValues === 'string' ? JSON.parse(filterValues as any) : filterValues;
+        customFilters = typeof customFilters === 'string' ? JSON.parse(customFilters as any) : customFilters;
+
+        // Validation subCategory
+        const currentSubCategory = await subCategoryModel.findById(subCategory);
+        if (!currentSubCategory) {
+            return this.errorResponse(res, 'SubCategory not found', 400);
+        }
+
+        if (slug && slug !== product.slug) {
+            slug = await this.getUniqueSlug(productModel, slug);
+        }
+
+        let images = product.images;
+
+        if (deleteImages?.length) {
+            deleteImages.forEach(async (index) => {
+                const image = images[+index];
+                if (image) {
+                    await this.deleteFile(image);
+                    images.splice(+index, 1);
+                }
+            });
+        }
+
+        if (req.files) {
+            const files = Array.isArray(req.files) ? req.files : [];
+            const newImages = await Promise.all(files.map((file) => saveFile(file, ['images', 'products'])));
+            images = [...images, ...newImages];
+        }
+
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            id,
+            {
+                name,
+                slug,
+                customFilters,
+                description,
+                filterValues,
+                images,
+                subCategory,
+            },
+            { new: true }
+        );
+
+        return this.successResponse(res, updatedProduct, 'Product updated successfully!');
     };
 }
 

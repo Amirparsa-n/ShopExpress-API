@@ -1,5 +1,3 @@
-import { validMimeTypes } from '@configs/uploader';
-import { megabytesToBytes } from '@utils/sizeConversion';
 import mongoose, { isValidObjectId } from 'mongoose';
 import { z } from 'zod';
 
@@ -11,7 +9,7 @@ const sellersSchema = z.object({
     stock: z.number().min(0),
 });
 
-export const productSchema = z.object({
+export const createProductSchema = z.object({
     name: z.string().trim().max(100),
     slug: z.string().trim(),
     description: z.string().max(1000),
@@ -42,4 +40,27 @@ export const productSchema = z.object({
         .string()
         .transform((val) => JSON.parse(val))
         .pipe(z.object({}).passthrough()),
+});
+
+export const updateProductSchema = z.object({
+    name: z.string().trim().max(100),
+    slug: z.string().trim(),
+    description: z.string().max(1000),
+    subCategory: z
+        .string({ message: 'SubCategory ID is required' })
+        .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+            message: 'Invalid ObjectId format',
+        }),
+    filterValues: z
+        .string()
+        .transform((val) => JSON.parse(val))
+        .pipe(z.object({}).passthrough()),
+    customFilters: z
+        .string()
+        .transform((val) => JSON.parse(val))
+        .pipe(z.object({}).passthrough()),
+    deleteImages: z
+        .string()
+        .transform((val) => (val ? JSON.parse(val) : null))
+        .pipe(z.array(z.number()).optional()),
 });
