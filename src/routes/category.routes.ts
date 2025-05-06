@@ -46,8 +46,8 @@ categoryRouter
 
 categoryRouter
     .route('/sub/:id')
-    .get(V({ params: objectIdSchema }), categoryController.getSubcategory)
+    .get(V({ params: objectIdSchema() }), categoryController.getSubcategory)
     .put(authGuard, roleGuard('admin'), V({ body: subCategorySchema }), categoryController.editSubcategory)
-    .delete(authGuard, roleGuard('admin'), V({ params: objectIdSchema }), categoryController.deleteSubcategory);
+    .delete(authGuard, roleGuard('admin'), V({ params: objectIdSchema() }), categoryController.deleteSubcategory);
 
 export default categoryRouter;

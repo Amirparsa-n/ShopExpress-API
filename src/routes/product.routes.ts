@@ -27,7 +27,7 @@ productRouter
         authGuard,
         roleGuard('admin'),
         uploader(2, 'image').array('images', 10),
-        V({ body: updateProductSchema, params: objectIdSchema }),
+        V({ body: updateProductSchema, params: objectIdSchema() }),
         productController.update
     );
 

@@ -23,7 +23,7 @@ sellerRequestRouter
     .patch(
         authGuard,
         roleGuard('admin'),
-        V({ body: updateSellerRequestSchema, params: objectIdSchema }),
+        V({ body: updateSellerRequestSchema, params: objectIdSchema() }),
         sellerRequestController.updateRequest
     )
     .delete(authGuard, roleGuard('seller'), sellerRequestController.deleteRequest);

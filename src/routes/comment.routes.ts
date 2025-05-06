@@ -2,7 +2,13 @@ import commentController from '@controllers/comment.controller';
 import { authGuard } from '@middlewares/authGuard.middleware';
 import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
-import { createCommentSchema } from '@validators/comment.validation';
+import {
+    addReplySchema,
+    createCommentSchema,
+    updateCommentSchema,
+    updateReplySchema,
+} from '@validators/comment.validation';
+import { objectIdSchema } from '@validators/validation';
 import { Router } from 'express';
 
 const commentRouter = Router();
@@ -15,14 +21,26 @@ commentRouter
 commentRouter
     .use(authGuard)
     .route('/:id')
-    .patch(commentController.updateComment)
+    .patch(V({ body: updateCommentSchema }), commentController.updateComment)
     .delete(roleGuard('admin'), commentController.deleteComment);
 
-commentRouter.route('/:commentId/reply').post(authGuard, commentController.createReplyComment);
+// * Reply comment
+
+commentRouter
+    .route('/:commentId/reply')
+    .post(
+        authGuard,
+        V({ body: addReplySchema, params: objectIdSchema('commentId') }),
+        commentController.createReplyComment
+    );
+
 commentRouter
     .use(authGuard)
     .route('/:commentId/reply/:replyId')
-    .patch(commentController.updateComment)
-    .delete(commentController.deleteComment);
+    .patch(
+        V({ body: updateReplySchema, params: objectIdSchema(['commentId', 'replyId']) }),
+        commentController.updateReplyComment
+    )
+    .delete(V({ params: objectIdSchema(['commentId', 'replyId']) }), commentController.deleteReplyComment);
 
 export default commentRouter;

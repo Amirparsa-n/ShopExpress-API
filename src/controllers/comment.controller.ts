@@ -1,5 +1,10 @@
 /* eslint-disable perfectionist/sort-classes */
-import type { createCommentSchema } from '@validators/comment.validation';
+import type {
+    addReplySchema,
+    createCommentSchema,
+    updateCommentSchema,
+    updateReplySchema,
+} from '@validators/comment.validation';
 import type { Request, Response } from 'express';
 import type { z } from 'zod';
 
@@ -31,7 +36,7 @@ class CommentController extends BaseController {
             sort: { createdAt: -1 },
             populate: [
                 { path: 'user', select: 'phone' },
-                { path: 'replies', populate: { path: 'users', select: 'phone' } },
+                { path: 'replies', populate: { path: 'user', select: 'phone' } },
             ],
         });
 
@@ -60,7 +65,28 @@ class CommentController extends BaseController {
 
         return this.successResponse(res, newComment, 'Comment create successfully', 201);
     };
-    updateComment = async (req: Request, res: Response): Promise<any> => {};
+
+    updateComment = async (
+        req: Request<any, any, z.infer<typeof updateCommentSchema>>,
+        res: Response
+    ): Promise<any> => {
+        const { id } = req.params;
+        const { content, rating } = req.body;
+        const user = req.user;
+
+        const comment = await commentModel.findById(id);
+        if (!comment) {
+            return this.errorResponse(res, 'Comment not found', 404);
+        }
+
+        if (comment.user.toString() !== user._id.toString()) {
+            return this.errorResponse(res, 'You have not access to this action');
+        }
+
+        const updatedComment = await commentModel.findByIdAndUpdate(id, { content, rating }, { new: true });
+
+        return this.successResponse(res, updatedComment, 'Comment updated successfully');
+    };
 
     deleteComment = async (req: Request, res: Response): Promise<any> => {
         const { id } = req.params;
@@ -77,10 +103,88 @@ class CommentController extends BaseController {
         return this.successResponse(res, deletedComment, 'Comment deleted successfully');
     };
 
-    // Reply Comment
-    createReplyComment = async (req: Request, res: Response): Promise<any> => {};
-    updateReplyComment = async (req: Request, res: Response): Promise<any> => {};
-    deleteReplyComment = async (req: Request, res: Response): Promise<any> => {};
+    // * Reply Comment -------------------------------------------------
+
+    createReplyComment = async (
+        req: Request<any, any, z.infer<typeof addReplySchema>>,
+        res: Response
+    ): Promise<any> => {
+        const { commentId } = req.params;
+        const { content } = req.body;
+        const user = req.user;
+
+        const comment = await commentModel.findByIdAndUpdate(
+            commentId,
+            {
+                $push: {
+                    replies: {
+                        user: user._id,
+                        content,
+                    },
+                },
+            },
+            { new: true }
+        );
+        if (!comment) {
+            return this.errorResponse(res, 'Comment not found', 404);
+        }
+
+        return this.successResponse(res, comment, 'Create reply comment successfully');
+    };
+
+    updateReplyComment = async (
+        req: Request<{ commentId: string; replyId: string }, any, z.infer<typeof updateReplySchema>>,
+        res: Response
+    ): Promise<any> => {
+        const { commentId, replyId } = req.params;
+        const { content } = req.body;
+        const user = req.user;
+
+        const comment = await commentModel.findById(commentId);
+        if (!comment) {
+            return this.errorResponse(res, 'Comment not found', 404);
+        }
+
+        const reply = comment.replies.find((reply) => reply._id.toString() === replyId);
+        if (!reply) {
+            return this.errorResponse(res, 'Reply comment not found', 404);
+        }
+
+        if (reply.user.toString() !== user._id.toString()) {
+            return this.errorResponse(res, 'You have not access to this action');
+        }
+
+        await commentModel.updateOne(
+            { _id: commentId },
+            { $set: { 'replies.$[reply].content': content } },
+            { arrayFilters: [{ 'reply._id': replyId }] }
+        );
+
+        return this.successResponse(res, null, 'Reply comment updated successfully');
+    };
+
+    deleteReplyComment = async (req: Request, res: Response): Promise<any> => {
+        const { commentId, replyId } = req.params;
+        const user = req.user;
+
+        const comment = await commentModel.findById(commentId);
+        if (!comment) {
+            return this.errorResponse(res, 'Comment not found', 404);
+        }
+
+        const reply = comment.replies.find((reply) => reply._id.toString() === replyId);
+        if (!reply) {
+            return this.errorResponse(res, 'Reply comment not found', 404);
+        }
+
+        if (reply.user.toString() !== user._id.toString()) {
+            return this.errorResponse(res, 'You have not access to this action');
+        }
+
+        await commentModel.updateOne({ _id: commentId }, { $pull: { replies: { _id: replyId } } });
+
+        return this.successResponse(res, null, 'Reply comment deleted successfully');
+    };
 }
 
 export default new CommentController();
