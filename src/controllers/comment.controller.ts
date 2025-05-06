@@ -5,12 +5,38 @@ import type { z } from 'zod';
 
 import commentModel from '@models/comment.model';
 import productModel from '@models/product.model';
-
-import { BaseController } from './base.controller';
 import { isValidObjectId } from 'mongoose';
 
+import { BaseController } from './base.controller';
+
 class CommentController extends BaseController {
-    getComments = async (req: Request, res: Response): Promise<any> => {};
+    getComments = async (req: Request, res: Response): Promise<any> => {
+        const { productId, limit, page } = req.query as { productId: string; limit: string; page: string };
+
+        if (!isValidObjectId(productId)) {
+            return this.errorResponse(res, 'Invalid product id');
+        }
+
+        const product = await productModel.findById(productId).lean();
+        if (!product) {
+            return this.errorResponse(res, 'Product not found', 404);
+        }
+
+        const comments = await this.handlePagination({
+            dataKey: 'comments',
+            model: commentModel,
+            limit: +limit,
+            page: +page,
+            query: { product: productId },
+            sort: { createdAt: -1 },
+            populate: [
+                { path: 'user', select: 'phone' },
+                { path: 'replies', populate: { path: 'users', select: 'phone' } },
+            ],
+        });
+
+        return this.successResponse(res, comments);
+    };
 
     createComment = async (
         req: Request<any, any, z.infer<typeof createCommentSchema>>,
