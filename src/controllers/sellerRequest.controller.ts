@@ -7,6 +7,7 @@ import sellerModel from '@models/seller.model';
 import sellerRequestModel from '@models/sellerRequest.model';
 
 import { BaseController } from './base.controller';
+import { isValidObjectId } from 'mongoose';
 
 class SellerRequest extends BaseController {
     createRequest = async (
@@ -42,7 +43,36 @@ class SellerRequest extends BaseController {
         return this.successResponse(res, newSellerRequest, 'Request created successfully', 201);
     };
 
-    deleteRequest = async (req: Request, res: Response): Promise<any> => {};
+    deleteRequest = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+        const user = req.user;
+
+        if (!isValidObjectId(id)) {
+            return this.errorResponse(res, 'Invalid request ID', 400);
+        }
+
+        const seller = await sellerModel.findOne({ user: user._id });
+        if (!seller) {
+            return this.errorResponse(res, 'Seller not found', 404);
+        }
+
+        const sellerRequest = await sellerRequestModel.findOne({ _id: id });
+        if (!sellerRequest) {
+            return this.errorResponse(res, 'Request not found', 404);
+        }
+
+        if (sellerRequest.seller.toString() !== seller._id.toString()) {
+            return this.errorResponse(res, 'You have not access to this request', 403);
+        }
+
+        if (sellerRequest.status !== 'pending') {
+            return this.errorResponse(res, 'You can only delete pending requests', 400);
+        }
+
+        await sellerRequestModel.deleteOne({ _id: id });
+
+        return this.successResponse(res, null, 'Request deleted successfully', 200);
+    };
 
     getAllRequest = async (req: Request, res: Response): Promise<any> => {};
 

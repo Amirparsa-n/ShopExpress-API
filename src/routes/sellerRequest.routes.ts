@@ -21,6 +21,6 @@ sellerRequestRouter
     .route('/:id')
     .get(authGuard, roleGuard('admin'), sellerRequestController.getRequestById)
     .patch(authGuard, roleGuard('admin'), sellerRequestController.updateRequest)
-    .delete(authGuard, roleGuard('admin'), sellerRequestController.deleteRequest);
+    .delete(authGuard, roleGuard('seller'), sellerRequestController.deleteRequest);
 
 export default sellerRequestRouter;
