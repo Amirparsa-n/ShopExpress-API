@@ -20,7 +20,6 @@ sellerRequestRouter.post(
 
 sellerRequestRouter
     .route('/:id')
-    .get(authGuard, roleGuard('admin'), sellerRequestController.getRequestById)
     .patch(
         authGuard,
         roleGuard('admin'),

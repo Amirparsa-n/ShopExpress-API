@@ -100,8 +100,6 @@ class SellerRequest extends BaseController {
         return this.successResponse(res, sellerRequests, 'Requests retrieved successfully', 200);
     };
 
-    getRequestById = async (req: Request, res: Response): Promise<any> => {};
-
     updateRequest = async (req: Request, res: Response): Promise<any> => {
         const { id } = req.params;
         const { status, adminComment } = req.body as z.infer<typeof updateSellerRequestSchema>;
