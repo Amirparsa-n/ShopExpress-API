@@ -5,9 +5,9 @@ import type { z } from 'zod';
 import productModel from '@models/product.model';
 import sellerModel from '@models/seller.model';
 import sellerRequestModel from '@models/sellerRequest.model';
+import { isValidObjectId } from 'mongoose';
 
 import { BaseController } from './base.controller';
-import { isValidObjectId } from 'mongoose';
 
 class SellerRequest extends BaseController {
     createRequest = async (
@@ -74,7 +74,31 @@ class SellerRequest extends BaseController {
         return this.successResponse(res, null, 'Request deleted successfully', 200);
     };
 
-    getAllRequest = async (req: Request, res: Response): Promise<any> => {};
+    getAllRequest = async (req: Request, res: Response): Promise<any> => {
+        const user = req.user;
+        const { page, limit, status = 'pending' } = req.query as { page: string; limit: string; status: string };
+
+        const seller = await sellerModel.findOne({ user: user._id });
+        if (!seller) {
+            return this.errorResponse(res, 'Seller not found', 404);
+        }
+
+        const filters = {
+            seller: seller._id,
+            status,
+        };
+
+        const sellerRequests = await this.handlePagination({
+            dataKey: 'request',
+            model: sellerRequestModel,
+            limit: +limit,
+            page: +page,
+            query: filters,
+            sort: { createdAt: -1 },
+        });
+
+        return this.successResponse(res, sellerRequests, 'Requests retrieved successfully', 200);
+    };
 
     getRequestById = async (req: Request, res: Response): Promise<any> => {};
 

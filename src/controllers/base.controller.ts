@@ -85,19 +85,28 @@ export class BaseController {
      * @param query MongoDB query object
      * @param populate Optional populate fields
      */
-    async handlePagination(
-        dataKey: string,
-        model: any,
-        query: RootFilterQuery<any> = {},
-        page: number = 1,
-        limit: number = 10,
-        populate: any[] = []
-    ) {
+    async handlePagination({
+        dataKey,
+        model,
+        query = {},
+        page = 1,
+        limit = 10,
+        sort = {},
+        populate = [],
+    }: {
+        dataKey: string;
+        model: any;
+        query?: RootFilterQuery<any>;
+        page?: number;
+        limit?: number;
+        sort?: Record<string, 1 | -1>;
+        populate?: any[];
+    }) {
         const startIndex = (page - 1) * limit;
         const total = await model.countDocuments(query);
         const totalPages = Math.ceil(total / limit);
 
-        let dataQuery = model.find(query).skip(startIndex).limit(limit);
+        let dataQuery = model.find(query).skip(startIndex).limit(limit).sort(sort);
 
         if (populate.length > 0) {
             populate.forEach((field) => {

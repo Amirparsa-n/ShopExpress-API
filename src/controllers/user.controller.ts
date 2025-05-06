@@ -69,7 +69,13 @@ class UserController extends BaseController {
             : {};
 
         if (limit) {
-            const data = await this.handlePagination('users', userModel, searchQuery, +page, +limit, []);
+            const data = await this.handlePagination({
+                dataKey: 'users',
+                model: userModel,
+                query: searchQuery,
+                limit: +limit,
+                page: +page,
+            });
             return this.successResponse(res, data);
         } else {
             const users = await userModel.find(searchQuery);

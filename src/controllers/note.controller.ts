@@ -75,10 +75,14 @@ class NoteController extends BaseController {
         const { page, limit } = req.query;
         const user = req.user;
 
-        const notes = await this.handlePagination('notes', noteModel, { user: user._id }, +page, +limit, [
-            'product',
-            { path: 'user', select: 'firstName lastName phone email' },
-        ]);
+        const notes = await this.handlePagination({
+            dataKey: 'notes',
+            model: noteModel,
+            query: { user: user._id },
+            page: +page,
+            limit: +limit,
+            populate: ['product', { path: 'user', select: 'firstName lastName phone email' }],
+        });
 
         return this.successResponse(res, notes);
     };
