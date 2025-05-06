@@ -2,7 +2,8 @@ import sellerRequestController from '@controllers/sellerRequest.controller';
 import { authGuard } from '@middlewares/authGuard.middleware';
 import { roleGuard } from '@middlewares/roleGuard.middleware';
 import { V } from '@middlewares/validation.middleware';
-import { createSellerRequestSchema } from '@validators/sellerRequest.validation';
+import { createSellerRequestSchema, updateSellerRequestSchema } from '@validators/sellerRequest.validation';
+import { objectIdSchema } from '@validators/validation';
 import { Router } from 'express';
 
 const sellerRequestRouter = Router();
@@ -20,7 +21,12 @@ sellerRequestRouter.post(
 sellerRequestRouter
     .route('/:id')
     .get(authGuard, roleGuard('admin'), sellerRequestController.getRequestById)
-    .patch(authGuard, roleGuard('admin'), sellerRequestController.updateRequest)
+    .patch(
+        authGuard,
+        roleGuard('admin'),
+        V({ body: updateSellerRequestSchema, params: objectIdSchema }),
+        sellerRequestController.updateRequest
+    )
     .delete(authGuard, roleGuard('seller'), sellerRequestController.deleteRequest);
 
 export default sellerRequestRouter;

@@ -22,5 +22,5 @@ export const updateSellerRequestSchema = z.object({
             message: 'Status must be either "approve" or "reject"',
         }),
 
-    adminComments: z.string().max(1000, 'Comment cannot exceed 1000 characters').optional(),
+    adminComment: z.string().max(1000, 'Comment cannot exceed 1000 characters').optional(),
 });

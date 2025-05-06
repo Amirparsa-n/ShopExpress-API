@@ -99,7 +99,7 @@ export class BaseController {
         query?: RootFilterQuery<any>;
         page?: number;
         limit?: number;
-        sort?: Record<string, 1 | -1>;
+        sort?: Record<string, -1 | 1>;
         populate?: any[];
     }) {
         const startIndex = (page - 1) * limit;

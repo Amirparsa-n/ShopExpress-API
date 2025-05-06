@@ -1,4 +1,4 @@
-import type { createSellerRequestSchema } from '@validators/sellerRequest.validation';
+import type { createSellerRequestSchema, updateSellerRequestSchema } from '@validators/sellerRequest.validation';
 import type { Request, Response } from 'express';
 import type { z } from 'zod';
 
@@ -102,7 +102,53 @@ class SellerRequest extends BaseController {
 
     getRequestById = async (req: Request, res: Response): Promise<any> => {};
 
-    updateRequest = async (req: Request, res: Response): Promise<any> => {};
+    updateRequest = async (req: Request, res: Response): Promise<any> => {
+        const { id } = req.params;
+        const { status, adminComment } = req.body as z.infer<typeof updateSellerRequestSchema>;
+
+        const sellerRequest = await sellerRequestModel.findOne({ _id: id });
+        if (!sellerRequest) {
+            return this.errorResponse(res, 'Request not found', 404);
+        }
+
+        if (status === 'reject') {
+            sellerRequest.status = 'rejected';
+            if (adminComment) {
+                sellerRequest.adminComment = adminComment;
+            }
+
+            await sellerRequest.save();
+
+            return this.successResponse(res, sellerRequest, 'Seller request rejected');
+        } else if (status === 'approve') {
+            const product = await productModel.findById(sellerRequest.product);
+            if (!product) {
+                return this.errorResponse(res, 'Product not found', 404);
+            }
+
+            const existingProductSeller = product.sellers.find(
+                (seller) => seller.seller.toString() === sellerRequest.seller.toString()
+            );
+
+            if (existingProductSeller) {
+                return this.errorResponse(res, 'Seller already exists fot this product!');
+            }
+
+            await productModel.findByIdAndUpdate(sellerRequest.product, {
+                $push: {
+                    sellers: {
+                        seller: sellerRequest.seller,
+                        price: sellerRequest.price,
+                        stock: sellerRequest.stock,
+                    },
+                },
+            });
+
+            await sellerRequestModel.findOneAndUpdate({ _id: id }, { status: 'approved' });
+
+            return this.successResponse(res, 'Seller request accepted successfully');
+        }
+    };
 }
 
 export default new SellerRequest();
