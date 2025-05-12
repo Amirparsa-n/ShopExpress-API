@@ -57,7 +57,28 @@ class CartController extends BaseController {
         return this.successResponse(res, cart, 'Product quantity updated in cart');
     };
 
-    getCart = async (req: Request, res: Response): Promise<any> => {};
+    getCart = async (req: Request, res: Response): Promise<any> => {
+        const user = req.user;
+
+        const cart = await cartModel
+            .findOne({ user: user._id })
+            .populate('items.product')
+            .populate('items.seller')
+            .select('-__v -createdAt -updatedAt -user');
+
+        if (!cart) {
+            return this.successResponse(res, null, 'Cart is empty');
+        }
+
+        cart.items.forEach((item) => {
+            const product = item.product as any;
+            if (product.images) {
+                product.images = product.images.map((image: string) => this.getFileUrl(image));
+            }
+        });
+
+        return this.successResponse(res, cart, 'Cart retrieved successfully');
+    };
 
     removeFromCart = async (
         req: Request<any, any, z.infer<typeof removeFromCartSchema>>,
