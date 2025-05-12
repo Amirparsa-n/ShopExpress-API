@@ -1,4 +1,4 @@
-import type { addToCartSchema } from '@validators/cart.validation';
+import type { addToCartSchema, removeFromCartSchema } from '@validators/cart.validation';
 import type { Request, Response } from 'express';
 import type { z } from 'zod';
 
@@ -59,7 +59,34 @@ class CartController extends BaseController {
 
     getCart = async (req: Request, res: Response): Promise<any> => {};
 
-    removeFromCart = async (req: Request, res: Response): Promise<any> => {};
+    removeFromCart = async (
+        req: Request<any, any, z.infer<typeof removeFromCartSchema>>,
+        res: Response
+    ): Promise<any> => {
+        const { productId, sellerId } = req.body;
+        const user = req.user;
+
+        const cart = await cartModel.findOne({ user: user._id });
+        if (!cart) {
+            return this.errorResponse(res, 'Cart not found', 404);
+        }
+
+        const productIndex = cart.items.findIndex(
+            (item) => item.product.toString() === productId && item.seller.toString() === sellerId
+        );
+        if (productIndex < 0) {
+            return this.errorResponse(res, 'Product not found in cart', 404);
+        }
+
+        cart.items.splice(productIndex, 1);
+        if (cart.items.length === 0) {
+            await cartModel.deleteOne({ user: user._id });
+            return this.successResponse(res, null, 'Cart is empty now');
+        }
+        await cart.save();
+
+        return this.successResponse(res, cart, 'Product removed from cart');
+    };
 }
 
 export default new CartController();

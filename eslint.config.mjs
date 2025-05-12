@@ -9,6 +9,7 @@ export default defineConfig({
         tsconfigRootDir: './tsconfig.json',
     },
     rules: {
+        '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-shadow': 'off',
         '@typescript-eslint/no-misused-promises': 'off',
         '@typescript-eslint/no-unnecessary-condition': 'off',
