@@ -6,6 +6,7 @@ import categoryRouter from './category.routes';
 import commentRouter from './comment.routes';
 import locationRouter from './location.routes';
 import noteRouter from './note.routes';
+import orderRouter from './order.routes';
 import productRouter from './product.routes';
 import sellerRouter from './seller.routes';
 import sellerRequestRouter from './sellerRequest.routes';
@@ -24,6 +25,8 @@ router.use('/notes', noteRouter);
 router.use('/seller-request', sellerRequestRouter);
 router.use('/comments', commentRouter);
 router.use('/cart', cartRouter);
+router.use('/orders', orderRouter);
+// router.use('/checkout', checkoutRouter);
 
 router.use('/short', shortLinkRouter);
 
