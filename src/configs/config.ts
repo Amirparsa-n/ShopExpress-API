@@ -15,6 +15,11 @@ const schema = new Config({
     redisURI: Config.string().required(),
     mongoURI: Config.string().required(),
     jwtSecretKey: Config.string().required(),
+    zarinpal: Config.object({
+        merchantId: Config.string().required(),
+        requestApiUrl: Config.string().required(),
+        verityApiUrl: Config.string().required(),
+    }),
 });
 
 const config = schema.parse({
@@ -24,6 +29,12 @@ const config = schema.parse({
     redisURI: process.env.REDIS_URL,
     mongoURI: process.env.MONGODB_URI,
     jwtSecretKey: process.env.JWT_SECRET,
+
+    zarinpal: {
+        merchantId: process.env.ZARINPAL_MERCHANT_ID,
+        requestApiUrl: process.env.ZARINPAL_REQUEST_API_URL,
+        verityApiUrl: process.env.ZARINPAL_VERIFY_API_URL,
+    },
 });
 
 export { config, publicDir };
