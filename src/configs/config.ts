@@ -19,6 +19,8 @@ const schema = new Config({
         merchantId: Config.string().required(),
         requestApiUrl: Config.string().required(),
         verityApiUrl: Config.string().required(),
+        paymentStartUrl: Config.string().required(),
+        callback_url: Config.string().required(),
     }),
 });
 
@@ -34,6 +36,8 @@ const config = schema.parse({
         merchantId: process.env.ZARINPAL_MERCHANT_ID,
         requestApiUrl: process.env.ZARINPAL_REQUEST_API_URL,
         verityApiUrl: process.env.ZARINPAL_VERIFY_API_URL,
+        paymentStartUrl: process.env.ZARINPAL_PAYMENT_START_URL,
+        callback_url: process.env.ZARINPAL_CALLBACK_URL,
     },
 });
 
