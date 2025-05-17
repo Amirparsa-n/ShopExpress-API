@@ -1,4 +1,5 @@
 export interface Seller {
+    _id: string;
     name: string;
     contactDetails: { phone: string };
     cityId: number;

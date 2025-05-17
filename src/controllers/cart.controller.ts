@@ -71,7 +71,7 @@ class CartController extends BaseController {
         }
 
         cart.items.forEach((item) => {
-            const product = item.product as any;
+            const product = item.product;
             if (product.images) {
                 product.images = product.images.map((image: string) => this.getFileUrl(image));
             }

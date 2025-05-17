@@ -1,5 +1,8 @@
 /* eslint-disable func-names */
 /* eslint-disable @typescript-eslint/no-invalid-this */
+import type { Model } from 'mongoose';
+import type { Cart } from 'src/types/cart.types';
+
 import { model, Schema } from 'mongoose';
 
 const cartItemSchema = new Schema({
@@ -24,7 +27,7 @@ const cartItemSchema = new Schema({
     },
 });
 
-const cartSchema = new Schema(
+const cartSchema = new Schema<Cart, Model<Cart>>(
     {
         user: {
             type: Schema.Types.ObjectId,
@@ -35,6 +38,13 @@ const cartSchema = new Schema(
     },
     { timestamps: true }
 );
+
+cartSchema.virtual('totalPrice').get(function () {
+    return this.items?.reduce((total, item) => {
+        const itemTotalPrice = item.priceAtTimeOfAdding * item.quantity;
+        return total + itemTotalPrice;
+    }, 0);
+});
 
 cartSchema.pre('save', function (next) {
     this.updatedAt = new Date();

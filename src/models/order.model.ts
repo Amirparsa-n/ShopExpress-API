@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+/* eslint-disable @typescript-eslint/no-invalid-this */
 import { model, Schema } from 'mongoose';
 
 const orderItemSchema = new Schema({
@@ -16,14 +18,14 @@ const orderItemSchema = new Schema({
         min: 1,
         required: true,
     },
-    priceAtTimeOfAdding: {
+    priceAtTimeOfPurchase: {
         type: Number,
         required: true,
     },
 });
 
 const orderSchema = new Schema({
-    userId: {
+    user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -39,7 +41,7 @@ const orderSchema = new Schema({
             type: String,
             required: true,
         },
-        coordinates: {
+        location: {
             lat: {
                 type: Number,
                 required: true,
@@ -65,6 +67,13 @@ const orderSchema = new Schema({
         type: String,
         required: true,
     },
+});
+
+orderSchema.virtual('totalPrice').get(function () {
+    return this.items?.reduce((total, item) => {
+        const itemTotalPrice = item.priceAtTimeOfPurchase * item.quantity;
+        return total + itemTotalPrice;
+    }, 0);
 });
 
 export default model('Order', orderSchema);
