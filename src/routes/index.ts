@@ -3,6 +3,7 @@ import { Router } from 'express';
 import authRouter from './auth.routes';
 import cartRouter from './cart.routes';
 import categoryRouter from './category.routes';
+import checkoutRouter from './checkout.routes';
 import commentRouter from './comment.routes';
 import locationRouter from './location.routes';
 import noteRouter from './note.routes';
@@ -26,7 +27,7 @@ router.use('/seller-request', sellerRequestRouter);
 router.use('/comments', commentRouter);
 router.use('/cart', cartRouter);
 router.use('/orders', orderRouter);
-// router.use('/checkout', checkoutRouter);
+router.use('/checkout', checkoutRouter);
 
 router.use('/short', shortLinkRouter);
 
