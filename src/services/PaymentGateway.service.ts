@@ -26,4 +26,25 @@ export const createPaymentGateway = async ({ amountInRial, description, mobile }
     return { authority: data.data.authority, paymentUrl: config.get('zarinpal.paymentStartUrl') + data.data.authority };
 };
 
-export const verifyPayment = async () => {};
+interface VerifyPaymentProps {
+    amountInRial: number;
+    authority: string;
+}
+
+export const verifyPayment = async ({ amountInRial, authority }: VerifyPaymentProps) => {
+    const response = await fetch(config.get('zarinpal.verityApiUrl'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            merchant_id: config.get('zarinpal.merchantId'),
+            amount: amountInRial,
+            authority,
+        }),
+    });
+    const data = await response.json();
+    console.log('🚀 ~ verifyPayment ~ data:', data);
+
+    return data.data;
+};
