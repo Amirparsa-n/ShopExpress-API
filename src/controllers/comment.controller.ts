@@ -15,6 +15,25 @@ import { isValidObjectId } from 'mongoose';
 import { BaseController } from './base.controller';
 
 class CommentController extends BaseController {
+    getAllComments = async (req: Request, res: Response): Promise<any> => {
+        const { limit, page } = req.query as { limit: string; page: string };
+
+        const comments = await this.handlePagination({
+            dataKey: 'comments',
+            model: commentModel,
+            limit: +limit,
+            page: +page,
+            sort: { createdAt: -1 },
+            populate: [
+                'product',
+                { path: 'user', select: 'phone _id role' },
+                { path: 'replies', populate: { path: 'user', select: 'phone _id role' } },
+            ],
+        });
+
+        return this.successResponse(res, comments);
+    };
+
     getComments = async (req: Request, res: Response): Promise<any> => {
         const { productId, limit, page } = req.query as { productId: string; limit: string; page: string };
 

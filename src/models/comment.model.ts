@@ -22,7 +22,7 @@ const commentSchema = new mongoose.Schema<Comment, Model<Comment>>(
     {
         product: {
             type: mongoose.Schema.Types.ObjectId,
-            red: 'Product',
+            ref: 'Product',
             required: true,
         },
         user: {

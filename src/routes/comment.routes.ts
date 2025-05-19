@@ -13,6 +13,8 @@ import { Router } from 'express';
 
 const commentRouter = Router();
 
+commentRouter.get('/all', authGuard, roleGuard('admin'), commentController.getAllComments);
+
 commentRouter
     .route('/')
     .get(commentController.getComments)
