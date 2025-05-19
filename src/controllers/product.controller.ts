@@ -7,8 +7,9 @@ import noteModel from '@models/note.model';
 import productModel from '@models/product.model';
 import subCategoryModel from '@models/subCategory.model';
 import { findUniqueIdentifier, isValidateSeller } from '@services/Product.service';
+import { formatPagination } from '@utils/formatPagination';
 import { saveFile } from '@utils/saveFile';
-import { isValidObjectId } from 'mongoose';
+import mongoose, { isValidObjectId } from 'mongoose';
 
 import { BaseController } from './base.controller';
 
@@ -83,6 +84,101 @@ class ProductController extends BaseController {
         await noteModel.deleteMany({ product: product.id });
 
         return this.successResponse(res, { product }, 'Product deleted successfully!');
+    };
+
+    getAllProducts = async (req: Request, res: Response): Promise<any> => {
+        const { limit, page, name, subCategory, minPrice, maxPrice, sellerId, filterValues } = req.query as {
+            limit: string;
+            page: string;
+            name: string;
+            subCategory: string;
+            minPrice: string;
+            maxPrice: string;
+            sellerId: string;
+            filterValues: string;
+        };
+
+        const filter: any = {
+            'sellers.stock': { $gt: 0 },
+        };
+
+        if (name) {
+            filter.name = { $regex: name, $options: 'i' };
+        }
+        if (subCategory) {
+            if (!isValidObjectId(subCategory)) {
+                return this.errorResponse(res, 'Invalid subCategory ID', 400);
+            }
+            filter.subCategory = mongoose.Types.ObjectId.createFromHexString(subCategory);
+        }
+        if (minPrice) {
+            filter['sellers.price'] = { $gte: +minPrice };
+        }
+        if (maxPrice) {
+            filter['sellers.price'] = { $lte: +maxPrice };
+        }
+        if (sellerId) {
+            if (!isValidObjectId(sellerId)) {
+                return this.errorResponse(res, 'Invalid seller ID', 400);
+            }
+            filter['sellers.seller'] = mongoose.Types.ObjectId.createFromHexString(sellerId);
+        }
+        if (filterValues) {
+            try {
+                const parsedFilterValues = JSON.parse(filterValues);
+                Object.keys(parsedFilterValues).forEach((key) => {
+                    filter[`filterValues.${key}`] = parsedFilterValues[key]; // value;
+                });
+            } catch (error) {
+                console.error('Error parsing filter values:', error);
+                return this.errorResponse(res, 'Invalid filter values', 400);
+            }
+        }
+
+        const products = await productModel.aggregate([
+            { $match: filter },
+            { $lookup: { from: 'comments', localField: '_id', foreignField: 'product', as: 'comments' } },
+            {
+                $addFields: {
+                    averageRating: {
+                        $cond: {
+                            if: { $gt: [{ $size: '$comments' }, 0] },
+                            then: { $avg: '$comments.rating' },
+                            else: 0,
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    comments: 0,
+                },
+            },
+            { $skip: (+page - 1) * +limit },
+            { $limit: +limit },
+        ]);
+
+        const productsWithImageUrls = products?.map((product) => {
+            const { images, ...productDetails } = product;
+            const imageUrls = images.map((image: string) => this.getFileUrl(image));
+            return {
+                ...productDetails,
+                images: imageUrls,
+            };
+        });
+
+        const totalProducts = await productModel.countDocuments(filter);
+
+        return this.successResponse(
+            res,
+            formatPagination({
+                dataKey: 'products',
+                data: productsWithImageUrls,
+                total: totalProducts,
+                page: +page,
+                limit: +limit,
+            })
+        );
     };
 
     getProductDetails = async (req: Request, res: Response): Promise<any> => {

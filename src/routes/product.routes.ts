@@ -11,6 +11,7 @@ const productRouter = Router();
 
 productRouter
     .route('/')
+    .get(productController.getAllProducts)
     .post(
         authGuard,
         roleGuard('admin'),

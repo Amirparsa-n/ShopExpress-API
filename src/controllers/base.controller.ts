@@ -4,6 +4,7 @@ import type { RootFilterQuery } from 'mongoose';
 import { config, publicDir } from '@configs/config';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
+import { formatPagination } from '@utils/formatPagination';
 
 export class BaseController {
     /**
@@ -104,7 +105,6 @@ export class BaseController {
     }) {
         const startIndex = (page - 1) * limit;
         const total = await model.countDocuments(query);
-        const totalPages = Math.ceil(total / limit);
 
         let dataQuery = model.find(query).skip(startIndex).limit(limit).sort(sort);
 
@@ -116,19 +116,13 @@ export class BaseController {
 
         const data = await dataQuery.exec();
 
-        return {
-            [dataKey]: data,
-            pagination: {
-                total,
-                totalPages,
-                currentPage: page,
-                perPage: limit,
-                hasNextPage: page < totalPages,
-                hasPrevPage: page > 1,
-                nextPage: page < totalPages ? page + 1 : null,
-                prevPage: page > 1 ? page - 1 : null,
-            },
-        };
+        return formatPagination({
+            dataKey,
+            data,
+            total,
+            page,
+            limit,
+        });
     }
 
     /**
