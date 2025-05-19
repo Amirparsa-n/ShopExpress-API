@@ -8,7 +8,7 @@ import { Router } from 'express';
 
 const sellerRequestRouter = Router();
 
-sellerRequestRouter.get('/?', authGuard, roleGuard('seller'), sellerRequestController.getAllRequest);
+sellerRequestRouter.get('/', authGuard, roleGuard('seller'), sellerRequestController.getAllRequest);
 
 sellerRequestRouter.post(
     '/',

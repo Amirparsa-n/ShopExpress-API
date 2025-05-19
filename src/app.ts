@@ -6,27 +6,13 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import swaggerUi from 'swagger-ui-express';
 
-import { config } from './configs/config';
 import errorHandler from './middlewares/error-handler';
 import { headersMiddleware } from './middlewares/headers.middleware';
 import { zodErrorHandler } from './middlewares/zodErrorHandler';
 import apiRoutes from './routes';
 
 import 'express-async-errors';
-
-const isProduction = config.get('isProduction');
-
-let swaggerDocument: any;
-if (!isProduction) {
-    try {
-        swaggerDocument = import('./configs/swagger.json');
-    } catch (error) {
-        console.error('Swagger document not found, skipping Swagger setup.', error);
-        swaggerDocument = null;
-    }
-}
 
 export function createApp() {
     const app = express();
@@ -48,10 +34,6 @@ export function createApp() {
         },
     });
     app.use(limiter);
-
-    if (!isProduction && swaggerDocument) {
-        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    }
 
     // API Routes
     app.use('/api', apiRoutes);

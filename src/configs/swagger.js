@@ -10,7 +10,7 @@ const doc = {
         description: 'Scoping App', // by default: ''
     },
     host: `localhost:${process.env.PORT}`,
-    basePath: `/api`,
+    // basePath: `/api`,
     schemes: ['http'], // by default: ['http']
     consumes: [], // by default: ['application/json']
     produces: [], // by default: ['application/json']
@@ -40,7 +40,7 @@ const doc = {
     ],
 };
 
-const outputFile = './swagger.json';
+const outputFile = './src/configs/swagger.json';
 const routes = ['../routes/index.ts'];
 
 /* NOTE: If you are using the express Router, you must pass in the 'routes' only the 

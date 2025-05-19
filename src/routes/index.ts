@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import apiDocsRouter from './api-docs.routes';
 import authRouter from './auth.routes';
 import cartRouter from './cart.routes';
 import categoryRouter from './category.routes';
@@ -30,5 +31,7 @@ router.use('/orders', orderRouter);
 router.use('/checkout', checkoutRouter);
 
 router.use('/short', shortLinkRouter);
+
+router.use('/docs', apiDocsRouter);
 
 export default router;

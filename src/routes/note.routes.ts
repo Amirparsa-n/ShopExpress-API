@@ -8,7 +8,7 @@ const noteRouter = Router();
 
 noteRouter
     .use(authGuard)
-    .route('/?')
+    .route('/')
     .get(noteController.getNotes)
     .post(V({ body: noteSchema }), noteController.addNote);
 
