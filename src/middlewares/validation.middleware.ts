@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 import type { NextFunction, Request, Response } from 'express';
 import type { AnyZodObject } from 'zod';
 
